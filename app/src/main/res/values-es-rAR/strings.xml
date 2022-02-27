@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tareas</string>
+    <string name="edit">Editar</string>
+    <string name="press">Presiona</string>
+    <string name="to_add_a_task">para añadir una tarea</string>
+    <string name="task">Tarea</string>
+    <string name="description">Descripcion</string>
+    <string name="add">Añadir</string>
+    <string name="date">Fecha</string>
+    <string name="time">Hora</string>
+    <string name="delete">Borrar</string>
+    <string name="delete_task">Borrar Tarea</string>
+    <string name="delete_task_question">Quieres borrar esta tarea?</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="notification_channel_description">Te recuerda sobre una Tarea cuando esta llega a la fecha establecida</string>
+    <string name="notification_channel_name">Recordatorio de Tareas</string>
+    <string name="restore">Restorar</string>
+    <string name="complete">Completar</string>
+    <string name="fan_off">Apagado</string>
+    <string name="fan_low">1</string>
+    <string name="fan_medium">2</string>
+    <string name="fan_high">3</string>
+</resources>

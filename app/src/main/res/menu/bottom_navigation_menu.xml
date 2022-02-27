@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fragment_all_tasks"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_task_24"
+        android:title="All tasks"/>
+    <item
+        android:id="@+id/fragment_completed_tasks"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_done_all_24"
+        android:title="Completed"/>
+    <item
+        android:id="@+id/fragment_deleted_tasks"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="Deleted"/>
+</menu>
