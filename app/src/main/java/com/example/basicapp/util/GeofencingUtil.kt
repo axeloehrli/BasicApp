@@ -95,7 +95,7 @@ fun addGeofence(
 }
 
 fun hello() {
-
+    val one = 1
 }
 
 fun removeGeofence(context: Context, geofencingClient: GeofencingClient, geofenceId: String) {
