@@ -1,4 +1,4 @@
-package com.example.basicapp.ui.fragments
+package com.example.basicapp.ui.fragment
 
 import android.os.Bundle
 import android.view.*
@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.basicapp.*
 import com.example.basicapp.data.datastore.SettingsDataStore
 import com.example.basicapp.databinding.FragmentAllTasksBinding
-import com.example.basicapp.ui.viewmodels.TaskViewModel
-import com.example.basicapp.ui.viewmodels.TaskViewModelFactory
-import com.example.basicapp.ui.adapters.Adapter
+import com.example.basicapp.ui.viewmodel.TaskViewModel
+import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
+import com.example.basicapp.ui.adapter.Adapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 

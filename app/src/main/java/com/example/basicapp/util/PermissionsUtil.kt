@@ -1,7 +1,6 @@
 package com.example.basicapp.util
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
@@ -9,11 +8,8 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.basicapp.ui.fragments.AddTaskFragmentDirections
 
 fun isForegroundLocationPermissionGranted(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(

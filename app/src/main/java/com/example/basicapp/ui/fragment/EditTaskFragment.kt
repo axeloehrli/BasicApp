@@ -1,14 +1,12 @@
-package com.example.basicapp.ui.fragments
+package com.example.basicapp.ui.fragment
 
 import android.app.*
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,19 +14,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.basicapp.*
 import com.example.basicapp.data.model.Task
-import com.example.basicapp.data.model.getFormattedDate
-import com.example.basicapp.data.model.getFormattedTime
 import com.example.basicapp.databinding.FragmentEditTaskBinding
-import com.example.basicapp.ui.viewmodels.TaskViewModel
-import com.example.basicapp.ui.viewmodels.TaskViewModelFactory
+import com.example.basicapp.ui.viewmodel.TaskViewModel
+import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.example.basicapp.util.addGeofence
 import com.example.basicapp.util.removeGeofence
-import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
-import java.text.DateFormat.MEDIUM
-import java.text.DateFormat.SHORT
-import java.text.SimpleDateFormat
 import java.util.*
 
 class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,

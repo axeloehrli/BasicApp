@@ -1,4 +1,4 @@
-package com.example.basicapp.ui.adapters
+package com.example.basicapp.ui.adapter
 
 import android.location.Geocoder
 import android.view.LayoutInflater
@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.basicapp.data.*
 import com.example.basicapp.data.model.*
 import com.example.basicapp.databinding.ItemBinding
 

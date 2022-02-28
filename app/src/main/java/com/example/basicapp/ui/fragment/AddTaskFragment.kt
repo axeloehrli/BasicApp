@@ -1,22 +1,15 @@
-package com.example.basicapp.ui.fragments
+package com.example.basicapp.ui.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.*
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -27,8 +20,8 @@ import com.example.basicapp.databinding.FragmentAddTaskBinding
 import java.util.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.basicapp.ui.viewmodels.TaskViewModel
-import com.example.basicapp.ui.viewmodels.TaskViewModelFactory
+import com.example.basicapp.ui.viewmodel.TaskViewModel
+import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.example.basicapp.util.addGeofence
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE

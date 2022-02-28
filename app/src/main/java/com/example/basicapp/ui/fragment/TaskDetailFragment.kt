@@ -1,4 +1,4 @@
-package com.example.basicapp.ui.fragments
+package com.example.basicapp.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,8 +14,8 @@ import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.model.getFormattedDateAndTime
 import com.example.basicapp.databinding.FragmentTaskDetailBinding
 import com.example.basicapp.util.removeGeofence
-import com.example.basicapp.ui.viewmodels.TaskViewModel
-import com.example.basicapp.ui.viewmodels.TaskViewModelFactory
+import com.example.basicapp.ui.viewmodel.TaskViewModel
+import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 

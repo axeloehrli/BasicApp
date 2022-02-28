@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment_all_tasks"
-        android:name="com.example.basicapp.ui.fragments.AllTasksFragment"
+        android:name="com.example.basicapp.ui.fragment.AllTasksFragment"
         android:label="All Tasks"
         tools:layout="@layout/fragment_all_tasks" >
 
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTaskFragment"
-        android:name="com.example.basicapp.ui.fragments.AddTaskFragment"
+        android:name="com.example.basicapp.ui.fragment.AddTaskFragment"
         android:label="Add Task" >
         <action
             android:id="@+id/action_addTaskFragment_to_fragment_all_tasks"
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/taskDetailFragment"
-        android:name="com.example.basicapp.ui.fragments.TaskDetailFragment"
+        android:name="com.example.basicapp.ui.fragment.TaskDetailFragment"
         android:label="Task Details" >
 
         <argument
@@ -44,7 +44,7 @@
     </fragment>
     <fragment
         android:id="@+id/editTaskFragment"
-        android:name="com.example.basicapp.ui.fragments.EditTaskFragment"
+        android:name="com.example.basicapp.ui.fragment.EditTaskFragment"
         android:label="Edit Task" >
         <argument
             android:name="item_id"
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.basicapp.ui.fragments.MapsFragment"
+        android:name="com.example.basicapp.ui.fragment.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action

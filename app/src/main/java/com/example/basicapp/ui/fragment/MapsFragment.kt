@@ -1,4 +1,4 @@
-package com.example.basicapp.ui.fragments
+package com.example.basicapp.ui.fragment
 
 import android.annotation.SuppressLint
 import android.location.Location
@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +18,8 @@ import com.example.basicapp.databinding.FragmentMapsBinding
 import com.example.basicapp.util.addGeofence
 import com.example.basicapp.util.isNetworkAvailable
 import com.example.basicapp.util.removeGeofence
-import com.example.basicapp.ui.viewmodels.TaskViewModel
-import com.example.basicapp.ui.viewmodels.TaskViewModelFactory
+import com.example.basicapp.ui.viewmodel.TaskViewModel
+import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.google.android.gms.location.*
 
 import com.google.android.gms.maps.CameraUpdateFactory

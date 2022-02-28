@@ -1,21 +1,13 @@
-package com.example.basicapp.ui.viewmodels
+package com.example.basicapp.ui.viewmodel
 
-import android.Manifest
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.os.Looper
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.*
 import androidx.work.*
 import com.example.basicapp.data.room.TaskDao
 import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.worker.TaskReminderWorker
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import java.text.DateFormat.MEDIUM
