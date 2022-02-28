@@ -94,6 +94,10 @@ fun addGeofence(
     }
 }
 
+fun hello() {
+
+}
+
 fun removeGeofence(context: Context, geofencingClient: GeofencingClient, geofenceId: String) {
     geofencingClient.removeGeofences(listOf(geofenceId))
         .addOnSuccessListener {
