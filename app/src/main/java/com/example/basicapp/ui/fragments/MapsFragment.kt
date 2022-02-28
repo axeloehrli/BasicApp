@@ -46,8 +46,7 @@ class MapsFragment : Fragment() {
     private lateinit var myLocation: LatLng
     private lateinit var map: GoogleMap
 
-    private var taskLatitude : Double? = null
-    private var taskLongitude : Double? = null
+    var instructionsDialogShown = false
 
     private lateinit var locationCallback: LocationCallback
 
@@ -90,13 +89,6 @@ class MapsFragment : Fragment() {
             )
         }
 
-        map.setOnPoiClickListener { location ->
-            taskLatitude = location.latLng.latitude
-            taskLongitude = location.latLng.longitude
-
-
-        }
-
         binding.buttonDelete.setOnClickListener {
             removeGeofence(requireContext(), geofencingClient, "geofence")
         }
@@ -107,7 +99,10 @@ class MapsFragment : Fragment() {
                 myLocation = LatLng(location.latitude, location.longitude)
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 20f))
                 map.setOnCameraIdleListener {
-                    showInstructionsDialog()
+                    if (!instructionsDialogShown) {
+                        showInstructionsDialog()
+                        instructionsDialogShown = true
+                    }
                 }
             }
 
