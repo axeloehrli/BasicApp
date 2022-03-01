@@ -24,6 +24,9 @@ interface TaskDao {
     @Query("SELECT * from task ORDER BY time")
     fun getItemsByTime() : Flow<List<Task>>
 
+    @Query("SELECT * from task WHERE title LIKE :searchQuery")
+    fun searchDatabase(searchQuery : String) : Flow<List<Task>>
+
     @Query("SELECT * from task WHERE id = :id")
     fun getItem(id: Int): Flow<Task>
 

@@ -31,6 +31,10 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         }
     }
 
+    fun searchDatabase(searchQuery : String) : LiveData<List<Task>> {
+        return taskDao.searchDatabase(searchQuery).asLiveData()
+    }
+
     fun scheduleReminder(
         notificationTag: String,
         selectedTimeInMillis: Long

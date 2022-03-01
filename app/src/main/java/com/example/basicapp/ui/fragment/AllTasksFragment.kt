@@ -1,7 +1,11 @@
 package com.example.basicapp.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -19,7 +23,7 @@ import com.example.basicapp.ui.adapter.Adapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
-class AllTasksFragment : Fragment() {
+class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
@@ -75,28 +79,21 @@ class AllTasksFragment : Fragment() {
             binding.emptyMessage.visibility =
                 if (tasks.isEmpty()) View.VISIBLE else View.GONE
         }*/
-
-
         SettingsDataStore = SettingsDataStore(requireContext())
 
-        SettingsDataStore.sortOrderFlow.asLiveData().observe(viewLifecycleOwner) {
-            sortOrder ->
-            viewModel.sortedTasks(sortOrder).observe(viewLifecycleOwner) {
-                tasks ->
-                adapter.submitList(tasks)
-                binding.emptyMessage.visibility =
-                    if (tasks.isEmpty()) View.VISIBLE else View.GONE
-            }
-        }
+        showSortedList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.sort_order_menu, menu)
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as SearchView?
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.sort_by_date -> {
                 lifecycleScope.launch {
                     SettingsDataStore.saveSortByToPreferences(
@@ -116,4 +113,47 @@ class AllTasksFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        Log.d("task", "I WAS CALLED TO BATTLE SUBMIT")
+        if (query != null) {
+            searchDatabase(query)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        Log.d("task", "I WAS CALLED TO BATTLE")
+        if (newText != null && newText != "") {
+            searchDatabase(newText)
+        } else {
+            showSortedList()
+        }
+
+        return true
+    }
+
+    private fun showSortedList() {
+        SettingsDataStore.sortOrderFlow.asLiveData().observe(viewLifecycleOwner) { sortOrder ->
+            viewModel.sortedTasks(sortOrder).observe(viewLifecycleOwner) { tasks ->
+                adapter.submitList(tasks)
+                binding.emptyMessage.visibility =
+                    if (tasks.isEmpty()) View.VISIBLE else View.GONE
+                binding.emptyMessageTextView.text = "Click + to add a Task"
+            }
+        }
+    }
+
+    private fun searchDatabase(newText: String?) {
+        val searchQuery = "%$newText%"
+        viewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { tasks ->
+            Log.d("task", "Observed search database")
+            adapter.submitList(tasks)
+            binding.emptyMessage.visibility =
+                if (tasks.isEmpty()) View.VISIBLE else View.GONE
+            binding.emptyMessageTextView.text = "No matches"
+        }
+
+    }
+
 }
