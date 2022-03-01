@@ -30,4 +30,6 @@
     <string name="fan_medium">2</string>
     <string name="fan_high">3</string>
     <string name="location">Location</string>
+    <string name="sort_by_date">Sort by date</string>
+    <string name="don_t_sort">Don\'t sort</string>
 </resources>

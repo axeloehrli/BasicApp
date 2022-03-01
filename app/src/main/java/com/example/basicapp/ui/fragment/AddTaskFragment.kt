@@ -89,7 +89,6 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             if (isEntryValid()) {
                 viewModel.scheduleReminder(
                     binding.titleEditText.text.toString(),
-                    binding.titleEditText.text.toString(),
                     viewModel.getDateTimeInMillis()
                 )
                 viewModel.addNewItem(

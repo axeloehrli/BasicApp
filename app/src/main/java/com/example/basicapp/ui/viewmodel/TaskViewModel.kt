@@ -18,14 +18,21 @@ import java.util.concurrent.TimeUnit
 
 class TaskViewModel(private val taskDao: TaskDao, application: Application) : ViewModel() {
 
-    val allTasks: LiveData<List<Task>> = taskDao.getItems().asLiveData()
+    private val tasksNotSorted: LiveData<List<Task>> = taskDao.getItems().asLiveData()
+    private val tasksSortedByDate : LiveData<List<Task>> = taskDao.getItemsByTime().asLiveData()
+
 
     private val workManager = WorkManager.getInstance(application)
 
+    fun sortedTasks(sortOrder : String) : LiveData<List<Task>> {
+        return when (sortOrder) {
+            "sort_by_date" ->  tasksSortedByDate
+            else -> tasksNotSorted
+        }
+    }
 
     fun scheduleReminder(
         notificationTag: String,
-        taskTitle: String,
         selectedTimeInMillis: Long
     ) {
 

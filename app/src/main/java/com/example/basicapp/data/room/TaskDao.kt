@@ -18,8 +18,11 @@ interface TaskDao {
     @Delete
     suspend fun delete(task: Task)
 
-    @Query("SELECT * from task ORDER BY time")
+    @Query("SELECT * from task")
     fun getItems(): Flow<List<Task>>
+
+    @Query("SELECT * from task ORDER BY time")
+    fun getItemsByTime() : Flow<List<Task>>
 
     @Query("SELECT * from task WHERE id = :id")
     fun getItem(id: Int): Flow<Task>

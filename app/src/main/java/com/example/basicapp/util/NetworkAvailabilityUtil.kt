@@ -11,21 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
-fun isForegroundLocationPermissionGranted(context: Context): Boolean {
-    return ContextCompat.checkSelfPermission(
-        context, Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-}
-
-
-fun Fragment.requestForegroundPermission(): ActivityResultLauncher<String> {
-    return registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-
-    }
-}
-
 fun isNetworkAvailable(context: Context?): Boolean {
     if (context == null) return false
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

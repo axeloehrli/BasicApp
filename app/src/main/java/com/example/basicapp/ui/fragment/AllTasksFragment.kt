@@ -2,15 +2,12 @@ package com.example.basicapp.ui.fragment
 
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.basicapp.*
@@ -37,11 +34,7 @@ class AllTasksFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var buttonAdd: FloatingActionButton
 
-    private var isLinearLayoutManager = true
-    private var isDarkMode = false
-
     private lateinit var SettingsDataStore: SettingsDataStore
-
 
     override fun onCreateView(
 
@@ -74,108 +67,53 @@ class AllTasksFragment : Fragment() {
             findNavController().navigate(action)
         }
         recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.allTasks.observe(viewLifecycleOwner) { tasks ->
+        /*viewModel.allTasks.observe(viewLifecycleOwner) { tasks ->
             adapter.submitList(tasks)
 
             binding.emptyMessage.visibility =
                 if (tasks.isEmpty()) View.VISIBLE else View.GONE
-        }
+        }*/
 
 
         SettingsDataStore = SettingsDataStore(requireContext())
 
-        SettingsDataStore.preferenceFlow.asLiveData().observe(viewLifecycleOwner) {
-            isLinearLayoutManager = it
-            chooseLayout()
-            activity?.invalidateOptionsMenu()
+        SettingsDataStore.sortOrderFlow.asLiveData().observe(viewLifecycleOwner) {
+            sortOrder ->
+            viewModel.sortedTasks(sortOrder).observe(viewLifecycleOwner) {
+                tasks ->
+                adapter.submitList(tasks)
+                binding.emptyMessage.visibility =
+                    if (tasks.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
-
-        SettingsDataStore.backgroundFlow.asLiveData().observe(viewLifecycleOwner) {
-            isDarkMode = it
-            chooseBackground()
-        }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.layout_menu, menu)
-
-        val layoutButton = menu.findItem(R.id.action_switch_layout)
-        val darkModeButton = menu.findItem(R.id.action_dark_mode)
-        setLayoutIcon(layoutButton)
-        setDarkModeIcon(darkModeButton)
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.sort_order_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_switch_layout -> {
-                // Sets isLinearLayoutManager (a Boolean) to the opposite value
-                isLinearLayoutManager = !isLinearLayoutManager
-                // Sets layout and icon
-
+        when(item.itemId) {
+            R.id.sort_by_date -> {
                 lifecycleScope.launch {
-                    SettingsDataStore.saveLayoutToPreferencesStore(
-                        isLinearLayoutManager,
+                    SettingsDataStore.saveSortByToPreferences(
+                        "sort_by_date",
                         requireContext()
                     )
                 }
-
-                setLayoutIcon(item)
-
-                return true
             }
-
-            R.id.action_dark_mode -> {
-                isDarkMode = !isDarkMode
+            else -> {
                 lifecycleScope.launch {
-                    SettingsDataStore.saveBackgroundToPreferencesStore(
-                        isDarkMode,
+                    SettingsDataStore.saveSortByToPreferences(
+                        "sort_by_none",
                         requireContext()
                     )
                 }
-                setDarkModeIcon(item)
-                return true
             }
-
-            else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun chooseLayout() {
-        if (isLinearLayoutManager) {
-            recyclerView.layoutManager = LinearLayoutManager(context)
-        } else {
-            recyclerView.layoutManager = GridLayoutManager(context, 2)
-        }
-    }
-
-    private fun setLayoutIcon(menuItem: MenuItem?) {
-        if (menuItem == null)
-            return
-
-        menuItem.icon =
-            if (isLinearLayoutManager)
-                ContextCompat.getDrawable(this.requireContext(), R.drawable.ic_grid_layout)
-            else ContextCompat.getDrawable(this.requireContext(), R.drawable.ic_linear_layout)
-    }
-
-    private fun chooseBackground() {
-        if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-    }
-
-    private fun setDarkModeIcon(menuItem: MenuItem?) {
-        if (menuItem == null) return
-
-        menuItem.icon =
-            if (isDarkMode) {
-                ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_light_mode_24)
-            } else ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_dark_mode_24)
-
+        return super.onOptionsItemSelected(item)
     }
 }
-

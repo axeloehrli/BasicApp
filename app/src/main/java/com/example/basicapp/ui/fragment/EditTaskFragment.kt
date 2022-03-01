@@ -143,7 +143,6 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             editButton.setOnClickListener {
                 viewModel.scheduleReminder(
                     task.notificationTag,
-                    binding.titleEditText.text.toString(),
                     viewModel.getDateTimeInMillis()
                 )
                 viewModel.selectedLocation.value?.let { selectedLocation ->
