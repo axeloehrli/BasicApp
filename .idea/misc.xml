@@ -14,6 +14,7 @@
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/drawable/rounded_corners_shape.xml" value="0.12447916666666667" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/activity_main.xml" value="0.17" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/bottomsheet_fragment.xml" value="0.1" />
+        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/dropdown_menu_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/first_fragment.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_add_task.xml" value="0.2556179775280899" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_all_tasks.xml" value="0.1" />
@@ -26,8 +27,10 @@
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_second.xml" value="0.18" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_task_detail.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/item.xml" value="0.2804878048780488" />
+        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/item_task.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/item_xml.xml" value="0.1" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/main_activity.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/taskItem.xml" value="0.1" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/menu/all_tasks_menu.xml" value="0.10677083333333333" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.25" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/menu/deleted_tasks_menu.xml" value="0.10677083333333333" />

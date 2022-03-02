@@ -18,11 +18,11 @@ interface TaskDao {
     @Delete
     suspend fun delete(task: Task)
 
-    @Query("SELECT * from task")
-    fun getItems(): Flow<List<Task>>
-
     @Query("SELECT * from task ORDER BY time")
     fun getItemsByTime() : Flow<List<Task>>
+
+    @Query("SELECT * FROM task ORDER BY CASE WHEN priority LIKE 'H%' THEN 1 WHEN priority LIKE 'M%' THEN 2 WHEN priority LIKE 'L%' THEN 3 END")
+    fun getItemByPriority() : Flow<List<Task>>
 
     @Query("SELECT * from task WHERE title LIKE :searchQuery")
     fun searchDatabase(searchQuery : String) : Flow<List<Task>>

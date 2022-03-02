@@ -17,7 +17,6 @@ import com.example.basicapp.TaskApplication
 import com.example.basicapp.databinding.FragmentMapsBinding
 import com.example.basicapp.util.addGeofence
 import com.example.basicapp.util.isNetworkAvailable
-import com.example.basicapp.util.removeGeofence
 import com.example.basicapp.ui.viewmodel.TaskViewModel
 import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.google.android.gms.location.*
@@ -45,7 +44,7 @@ class MapsFragment : Fragment() {
     private lateinit var myLocation: LatLng
     private lateinit var map: GoogleMap
 
-    var instructionsDialogShown = false
+    private var instructionsDialogShown = false
 
     private lateinit var locationCallback: LocationCallback
 
@@ -86,10 +85,6 @@ class MapsFragment : Fragment() {
                 "Hello",
                 map
             )
-        }
-
-        binding.buttonDelete.setOnClickListener {
-            removeGeofence(requireContext(), geofencingClient, "geofence")
         }
 
         fusedLocationClient.lastLocation

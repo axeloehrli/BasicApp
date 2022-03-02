@@ -33,4 +33,11 @@
     <string name="sort_by_date">Sort by date</string>
     <string name="don_t_sort">Don\'t sort</string>
     <string name="search">Search</string>
+    <string name="add_task_instruction">Press + to add a Task</string>
+    <string name="no_matches">No matches</string>
+    <string name="priority">Priority</string>
+    <string name="low_priority">Low priority</string>
+        <string name="medium_priority">Medium priority</string>
+        <string name="high_priority">High priority</string>
+    <string name="sort_by_priority">Sort by priority</string>
 </resources>

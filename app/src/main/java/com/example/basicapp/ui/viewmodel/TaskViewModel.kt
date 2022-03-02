@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Geocoder
 import androidx.lifecycle.*
 import androidx.work.*
+import com.example.basicapp.data.model.TaskPriority
 import com.example.basicapp.data.room.TaskDao
 import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.worker.TaskReminderWorker
@@ -18,16 +19,15 @@ import java.util.concurrent.TimeUnit
 
 class TaskViewModel(private val taskDao: TaskDao, application: Application) : ViewModel() {
 
-    private val tasksNotSorted: LiveData<List<Task>> = taskDao.getItems().asLiveData()
     private val tasksSortedByDate : LiveData<List<Task>> = taskDao.getItemsByTime().asLiveData()
-
+    private val tasksSortedByPriority : LiveData<List<Task>> = taskDao.getItemByPriority().asLiveData()
 
     private val workManager = WorkManager.getInstance(application)
 
     fun sortedTasks(sortOrder : String) : LiveData<List<Task>> {
         return when (sortOrder) {
-            "sort_by_date" ->  tasksSortedByDate
-            else -> tasksNotSorted
+            "sort_by_priority" ->  tasksSortedByPriority
+            else -> tasksSortedByDate
         }
     }
 
@@ -74,6 +74,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
     }
 
     fun addNewItem(
+        priority: TaskPriority,
         title: String,
         description: String,
         time: Long,
@@ -81,7 +82,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         longitude: Double?
     ) {
         val newItem = Task(
-            status = "Upcoming",
+            priority = priority,
             notificationTag = title,
             title = title,
             description = description,
@@ -119,7 +120,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
     fun editItem(
         id: Int,
         notificationTag: String,
-        status: String,
+        priority: TaskPriority,
         title: String,
         description: String,
         time: Long,
@@ -129,7 +130,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         val newTask = Task(
             id = id,
             notificationTag = notificationTag,
-            status = status,
+            priority = priority,
             title = title,
             description = description,
             time = time,
@@ -138,6 +139,22 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         )
 
         updateItem(newTask)
+    }
+
+    fun taskPriority(selectedPriority : String) : TaskPriority {
+        return when (selectedPriority) {
+            "Low priority" -> TaskPriority.LOW
+            "Medium priority" -> TaskPriority.MEDIUM
+            else -> TaskPriority.HIGH
+        }
+    }
+
+    fun taskPriorityString(taskPriority: TaskPriority) : String {
+        return when (taskPriority) {
+            TaskPriority.LOW -> "Low priority"
+            TaskPriority.MEDIUM -> "Medium priority"
+            else -> "High priority"
+        }
     }
 
 
@@ -223,7 +240,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         _selectedMinute.value = minute
     }
 
-    fun getDateTimeInMillis(): Long {
+    fun getTaskDateTimeInMillis(): Long {
         val calendar = Calendar.getInstance()
         calendar.set(
             selectedYear.value ?: defaultYear,
@@ -236,11 +253,11 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
     }
 
     fun dateFormattedText(): String {
-        return SimpleDateFormat.getDateInstance(MEDIUM).format(Date(getDateTimeInMillis()))
+        return SimpleDateFormat.getDateInstance(MEDIUM).format(Date(getTaskDateTimeInMillis()))
     }
 
     fun timeFormattedText(): String {
-        return SimpleDateFormat.getTimeInstance(SHORT).format(Date(getDateTimeInMillis()))
+        return SimpleDateFormat.getTimeInstance(SHORT).format(Date(getTaskDateTimeInMillis()))
     }
 
     fun resetDateTime() {

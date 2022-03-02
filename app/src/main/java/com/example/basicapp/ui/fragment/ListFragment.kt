@@ -1,11 +1,8 @@
 package com.example.basicapp.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -23,7 +20,7 @@ import com.example.basicapp.ui.adapter.Adapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
-class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
@@ -60,36 +57,31 @@ class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
 
         buttonAdd = binding.buttonAdd
         buttonAdd.setOnClickListener {
-            val action = AllTasksFragmentDirections.actionFragmentAllTasksToAddTaskFragment()
+            val action = ListFragmentDirections.actionFragmentAllTasksToAddTaskFragment()
             findNavController().navigate(action)
         }
 
         recyclerView = binding.recyclerView
-        adapter = Adapter {
+        adapter = Adapter { taskId ->
             val action =
-                AllTasksFragmentDirections.actionFragmentAllTasksToTaskDetailFragment(it.id)
+                ListFragmentDirections.actionFragmentAllTasksToTaskDetailFragment(taskId)
             findNavController().navigate(action)
         }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        /*viewModel.allTasks.observe(viewLifecycleOwner) { tasks ->
-            adapter.submitList(tasks)
-
-            binding.emptyMessage.visibility =
-                if (tasks.isEmpty()) View.VISIBLE else View.GONE
-        }*/
         SettingsDataStore = SettingsDataStore(requireContext())
 
         showSortedList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.sort_order_menu, menu)
+        inflater.inflate(R.menu.list_fragment_menu, menu)
         val search = menu.findItem(R.id.menu_search)
         val searchView = search.actionView as SearchView?
         searchView?.isSubmitButtonEnabled = true
         searchView?.setOnQueryTextListener(this)
+        searchView?.isIconified = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -102,10 +94,10 @@ class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
                     )
                 }
             }
-            else -> {
+            R.id.sort_by_priority -> {
                 lifecycleScope.launch {
                     SettingsDataStore.saveSortByToPreferences(
-                        "sort_by_none",
+                        "sort_by_priority",
                         requireContext()
                     )
                 }
@@ -115,7 +107,6 @@ class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        Log.d("task", "I WAS CALLED TO BATTLE SUBMIT")
         if (query != null) {
             searchDatabase(query)
         }
@@ -123,7 +114,6 @@ class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        Log.d("task", "I WAS CALLED TO BATTLE")
         if (newText != null && newText != "") {
             searchDatabase(newText)
         } else {
@@ -139,7 +129,7 @@ class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
                 adapter.submitList(tasks)
                 binding.emptyMessage.visibility =
                     if (tasks.isEmpty()) View.VISIBLE else View.GONE
-                binding.emptyMessageTextView.text = "Click + to add a Task"
+                binding.emptyMessageTextView.text = getString(R.string.add_task_instruction)
             }
         }
     }
@@ -147,13 +137,10 @@ class AllTasksFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun searchDatabase(newText: String?) {
         val searchQuery = "%$newText%"
         viewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { tasks ->
-            Log.d("task", "Observed search database")
             adapter.submitList(tasks)
             binding.emptyMessage.visibility =
                 if (tasks.isEmpty()) View.VISIBLE else View.GONE
-            binding.emptyMessageTextView.text = "No matches"
+            binding.emptyMessageTextView.text = getString(R.string.no_matches)
         }
-
     }
-
 }

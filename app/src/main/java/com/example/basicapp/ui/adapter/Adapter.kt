@@ -1,5 +1,6 @@
 package com.example.basicapp.ui.adapter
 
+import android.graphics.Color
 import android.location.Geocoder
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,10 +8,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.basicapp.data.model.*
-import com.example.basicapp.databinding.ItemBinding
+import com.example.basicapp.databinding.ItemTaskBinding
 
 class Adapter
-    (private val onItemClicked: (Task) -> Unit) :
+    (private val onItemClicked: (Int) -> Unit) :
     ListAdapter<Task, Adapter.ViewHolder>(DiffCallback) {
 
     companion object {
@@ -22,7 +23,7 @@ class Adapter
             override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
                 return when {
                     oldItem.id != newItem.id -> false
-                    oldItem.status != newItem.status -> false
+                    oldItem.priority != newItem.priority -> false
                     oldItem.title != newItem.title -> false
                     oldItem.description != newItem.description -> false
                     oldItem.time != newItem.time -> false
@@ -34,20 +35,20 @@ class Adapter
         }
     }
 
-    class ViewHolder(private var binding: ItemBinding) :
+    class ViewHolder(private var binding: ItemTaskBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
 
         fun bind(task: Task) {
             binding.apply {
-                itemTitle.text = task.title
-                itemDescription.text = task.description
-                itemDayOfWeek.text = task.getFormattedDayOfWeek()
-                itemDayOfMonth.text = task.getFormattedDayOfMonth()
-                itemMonth.text = task.getFormattedMonth()
-                itemTime.text = task.getFormattedTime()
-                itemLocation.text = task.getFormattedLocation(Geocoder(itemLayout.context))
-                itemStatus.text = task.status
+                taskPriority.setCardBackgroundColor(task.getPriorityColor())
+                taskTitle.text = task.title
+                taskDescription.text = task.description
+                taskDayOfWeek.text = task.getFormattedDayOfWeek()
+                taskDayOfMonth.text = task.getFormattedDayOfMonth()
+                taskMonth.text = task.getFormattedMonth()
+                taskTime.text = task.getFormattedTime()
+                taskLocation.text = task.getFormattedLocation(Geocoder(taskLayout.context))
 
                 executePendingBindings()
             }
@@ -56,7 +57,7 @@ class Adapter
 
     //creates the layout for each list item
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return ViewHolder(ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     // binds data to each list item
@@ -64,7 +65,7 @@ class Adapter
         val task = getItem(holder.adapterPosition)
 
         holder.itemView.setOnClickListener {
-            onItemClicked(task)
+            onItemClicked(task.id)
         }
         holder.bind(task)
 

@@ -1,5 +1,6 @@
 package com.example.basicapp.data.model
 
+import android.graphics.Color
 import android.location.Geocoder
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -7,6 +8,7 @@ import androidx.room.PrimaryKey
 import java.text.DateFormat.MEDIUM
 import java.text.DateFormat.SHORT
 import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity(tableName = "task")
 data class Task(
@@ -16,34 +18,35 @@ data class Task(
     @ColumnInfo(name = "notification_tag")
     var notificationTag: String,
 
-    @ColumnInfo(name = "status")
-    var status: String,
+    var priority: TaskPriority,
 
-    @ColumnInfo(name = "title")
     var title: String,
 
-    @ColumnInfo(name = "description")
     var description: String,
 
-    @ColumnInfo(name = "time")
     val time: Long,
 
-    @ColumnInfo(name = "latitude")
     val latitude: Double?,
 
-    @ColumnInfo(name = "longitude")
     val longitude: Double?
+
 )
 
 
 fun Task.getFormattedDateAndTime(): String =
     SimpleDateFormat.getDateTimeInstance(MEDIUM, SHORT).format(time)
 
-fun Task.getFormattedDate(): String = SimpleDateFormat.getDateInstance(MEDIUM).format(time)
+fun Task.getPriorityColor() : Int {
+    return when (priority) {
+        TaskPriority.HIGH -> Color.RED
+        TaskPriority.MEDIUM -> Color.YELLOW
+        else -> Color.GREEN
+    }
+}
 fun Task.getFormattedTime(): String = SimpleDateFormat.getTimeInstance(SHORT).format(time)
-fun Task.getFormattedMonth(): String = SimpleDateFormat("MMM").format(time)
-fun Task.getFormattedDayOfMonth(): String = SimpleDateFormat("d").format(time)
-fun Task.getFormattedDayOfWeek(): String = SimpleDateFormat("E").format(time)
+fun Task.getFormattedMonth(): String = SimpleDateFormat("MMM", Locale.getDefault()).format(time)
+fun Task.getFormattedDayOfMonth(): String = SimpleDateFormat("d", Locale.getDefault()).format(time)
+fun Task.getFormattedDayOfWeek(): String = SimpleDateFormat("E", Locale.getDefault()).format(time)
 fun Task.getFormattedLocation(geocoder: Geocoder): String? {
     if (latitude != null && longitude != null) {
         val address = geocoder.getFromLocation(

@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            tools:listitem="@layout/item" />
+            tools:listitem="@layout/taskItem" />
 
         <LinearLayout
             android:id="@+id/empty_message"

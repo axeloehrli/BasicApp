@@ -22,4 +22,14 @@
     <string name="fan_low">1</string>
     <string name="fan_medium">2</string>
     <string name="fan_high">3</string>
+    <string name="location">Localización</string>
+    <string name="sort_by_date">Ordenar por fecha</string>
+    <string name="don_t_sort">No ordenar</string>
+    <string name="search">Buscar</string>
+    <string name="add_task_instruction">Presiona + para añadir una tarea</string>
+    <string name="no_matches">No hay coincidencias</string>
+    <string name="priority">Prioridad</string>
+    <string name="low_priority">Prioridad baja</string>
+    <string name="medium_priority">Prioridad mediana</string>
+    <string name="high_priority">Prioridad alta</string>
 </resources>

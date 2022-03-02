@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.activity.result.contract.ActivityResultContracts
@@ -85,16 +86,29 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             checkPermissions()
         }
 
+        val taskPriorities = listOf(
+            resources.getString(R.string.low_priority),
+            resources.getString(R.string.medium_priority),
+            resources.getString(R.string.high_priority)
+        )
+        val arrayAdapter =
+            ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, taskPriorities)
+        binding.autoCompleteTextView.setAdapter(arrayAdapter)
+        binding.autoCompleteTextView.setText(getString(R.string.low_priority), false)
+
         binding.addButton.setOnClickListener {
             if (isEntryValid()) {
                 viewModel.scheduleReminder(
                     binding.titleEditText.text.toString(),
-                    viewModel.getDateTimeInMillis()
+                    viewModel.getTaskDateTimeInMillis()
                 )
                 viewModel.addNewItem(
+                    viewModel.taskPriority(
+                        binding.autoCompleteTextView.text.toString()
+                    ),
                     binding.titleEditText.text.toString(),
                     binding.descriptionEditText.text.toString(),
-                    viewModel.getDateTimeInMillis(),
+                    viewModel.getTaskDateTimeInMillis(),
                     viewModel.selectedLocation.value?.latitude,
                     viewModel.selectedLocation.value?.longitude
                 )

@@ -6,7 +6,7 @@
 
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/item_layout"
+        android:id="@+id/task_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -30,7 +30,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/item_day_of_week"
+                    android:id="@+id/task_day_of_week"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -38,7 +38,7 @@
                     tools:text="Wed" />
 
                 <TextView
-                    android:id="@+id/item_day_of_month"
+                    android:id="@+id/task_day_of_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -48,7 +48,7 @@
                     tools:text="23" />
 
                 <TextView
-                    android:id="@+id/item_month"
+                    android:id="@+id/task_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -75,12 +75,12 @@
                 android:orientation="vertical"
                 android:padding="10dp"
 
-                app:layout_constraintEnd_toStartOf="@+id/item_status"
+                app:layout_constraintEnd_toStartOf="@+id/task_priority"
                 app:layout_constraintStart_toEndOf="@+id/date_linear_layout"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/item_title"
+                    android:id="@+id/task_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
@@ -88,21 +88,21 @@
                     tools:text="Axel Oehrli" />
 
                 <TextView
-                    android:id="@+id/item_description"
+                    android:id="@+id/task_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     tools:text="Axel Oehrli" />
 
                 <TextView
-                    android:id="@+id/item_time"
+                    android:id="@+id/task_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     tools:text="Axel Oehrli" />
 
                 <TextView
-                    android:id="@+id/item_location"
+                    android:id="@+id/task_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
@@ -110,18 +110,17 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/item_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                tools:text="Upcoming"
-                android:textColor="@color/purple_200"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/task_priority"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="@color/gray"
+                app:cardCornerRadius="100dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
     </com.google.android.material.card.MaterialCardView>
 </layout>

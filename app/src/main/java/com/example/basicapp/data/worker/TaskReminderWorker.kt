@@ -30,30 +30,6 @@ class TaskReminderWorker(
             applicationContext
         )
 
-        suspend fun getItem() : Task {
-            return TaskRoomDatabase.getDatabase(applicationContext).taskDao().getItemByNotificationTag(taskTitle ?: "").first()
-        }
-
-
-        TaskRoomDatabase.getDatabase(applicationContext).taskDao().update(
-            Task(
-                getItem().id,
-                getItem().notificationTag,
-                "Late",
-                getItem().title,
-                getItem().description,
-                getItem().time,
-                getItem().latitude,
-                getItem().longitude
-            )
-        )
-
-
-
-        //currentTask.value!!.status = "Late"
-
-        //TaskRoomDatabase.getDatabase(applicationContext).taskDao().update(currentTask.value!!)
-
         return Result.success()
     }
 
