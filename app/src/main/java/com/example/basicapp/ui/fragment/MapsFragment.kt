@@ -57,7 +57,7 @@ class MapsFragment : Fragment() {
                     .setTitle("Location")
                     .setMessage("Do you want to add this task location?")
                     .setPositiveButton("Ok") { _, _ ->
-                        viewModel.setLocation(location)
+                        viewModel.setSelectedLocation(location)
                         Toast.makeText(
                             requireContext(),
                             viewModel.locationFormattedText(requireContext()),

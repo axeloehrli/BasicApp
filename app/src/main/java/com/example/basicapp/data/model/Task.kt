@@ -36,26 +36,24 @@ data class Task(
 fun Task.getFormattedDateAndTime(): String =
     SimpleDateFormat.getDateTimeInstance(MEDIUM, SHORT).format(time)
 
-fun Task.getPriorityColor() : Int {
+fun Task.getPriorityColor(): Int {
     return when (priority) {
         TaskPriority.HIGH -> Color.RED
         TaskPriority.MEDIUM -> Color.YELLOW
         else -> Color.GREEN
     }
 }
+
 fun Task.getFormattedTime(): String = SimpleDateFormat.getTimeInstance(SHORT).format(time)
 fun Task.getFormattedMonth(): String = SimpleDateFormat("MMM", Locale.getDefault()).format(time)
 fun Task.getFormattedDayOfMonth(): String = SimpleDateFormat("d", Locale.getDefault()).format(time)
 fun Task.getFormattedDayOfWeek(): String = SimpleDateFormat("E", Locale.getDefault()).format(time)
 fun Task.getFormattedLocation(geocoder: Geocoder): String? {
-    if (latitude != null && longitude != null) {
-        val address = geocoder.getFromLocation(
-            latitude,
-            longitude,
-            1
-        )
-        if (address.isEmpty()) return "Unknown location"
-        return "${address.first().thoroughfare} ${address.first().subThoroughfare},${address.first().locality}"
-    }
-    return null
+    val address = geocoder.getFromLocation(
+        latitude ?: return null,
+        longitude ?: return null,
+        1
+    )
+    if (address.isEmpty()) return "Unknown location"
+    return "${address.first().thoroughfare} ${address.first().subThoroughfare},${address.first().locality}"
 }

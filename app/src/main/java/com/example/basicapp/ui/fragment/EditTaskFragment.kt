@@ -70,6 +70,7 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             )
 
             setDefaultLocation()
+            setDefaultPriority()
 
             bind(it)
 
@@ -80,39 +81,18 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
 
 
     private fun bindEditTexts() {
-        binding.dateEditText.setText(
-            viewModel.dateFormattedText()
-        )
-
-        binding.timeEditText.setText(
-            viewModel.timeFormattedText()
-        )
-
-        binding.locationEditText.setText(
-            viewModel.locationFormattedText(requireContext())
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.resetDateTime()
-        viewModel.resetLocation()
-    }
-
-    private fun setDefaultLocation() {
-        if (viewModel.selectedLocation.value != null) return
-        viewModel.setLocation(
-            LatLng(
-                task.latitude ?: return,
-                task.longitude ?: return
-            )
-        )
-    }
-
-    private fun bind(task: Task) {
         binding.apply {
-            titleEditText.setText(task.title)
-            descriptionEditText.setText(task.description)
+            dateEditText.setText(
+                viewModel.dateFormattedText()
+            )
+
+            timeEditText.setText(
+                viewModel.timeFormattedText()
+            )
+
+            locationEditText.setText(
+                viewModel.locationFormattedText(requireContext())
+            )
 
             val taskPriorities = listOf(
                 resources.getString(R.string.low_priority),
@@ -125,7 +105,43 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
                 taskPriorities
             )
             autoCompleteTextView.setAdapter(arrayAdapter)
-            autoCompleteTextView.setText(viewModel.taskPriorityString(task.priority), false)
+            autoCompleteTextView.setText(
+                viewModel.selectedPriority.value ?: viewModel.defaultPriority.value,
+                false
+            )
+            autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+                viewModel.setSelectedPriority(position)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetSelectedDateTime()
+        viewModel.resetSelectedLocation()
+        viewModel.resetSelectedPriority()
+    }
+
+    private fun setDefaultLocation() {
+        if (viewModel.selectedLocation.value != null) return
+        viewModel.setSelectedLocation(
+            LatLng(
+                task.latitude ?: return,
+                task.longitude ?: return
+            )
+        )
+    }
+
+    private fun setDefaultPriority() {
+        viewModel.setDefaultPriority(
+            viewModel.taskPriorityString(task.priority)
+        )
+    }
+
+    private fun bind(task: Task) {
+        binding.apply {
+            titleEditText.setText(task.title)
+            descriptionEditText.setText(task.description)
 
             binding.dateEditText.setOnClickListener {
                 DatePickerDialog(

@@ -5,6 +5,7 @@ import android.app.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +52,7 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         savedInstanceState: Bundle?
     ): (View) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_add_task, container, false)
+
         return (binding.root)
     }
 
@@ -86,16 +88,6 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             checkPermissions()
         }
 
-        val taskPriorities = listOf(
-            resources.getString(R.string.low_priority),
-            resources.getString(R.string.medium_priority),
-            resources.getString(R.string.high_priority)
-        )
-        val arrayAdapter =
-            ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, taskPriorities)
-        binding.autoCompleteTextView.setAdapter(arrayAdapter)
-        binding.autoCompleteTextView.setText(getString(R.string.low_priority), false)
-
         binding.addButton.setOnClickListener {
             if (isEntryValid()) {
                 viewModel.scheduleReminder(
@@ -130,14 +122,19 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
 
     override fun onResume() {
         super.onResume()
-        bindEditTexts()
         viewModel.updateDefaultDateTime()
+        viewModel.setDefaultPriority(
+            resources.getString(R.string.low_priority)
+        )
+        bindEditTexts()
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.resetDateTime()
-        viewModel.resetLocation()
+        viewModel.resetSelectedDateTime()
+        viewModel.resetSelectedLocation()
+        viewModel.resetSelectedPriority()
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
@@ -170,6 +167,23 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         binding.locationEditText.setText(
             viewModel.locationFormattedText(requireContext())
         )
+
+        val taskPriorities = listOf(
+            resources.getString(R.string.low_priority),
+            resources.getString(R.string.medium_priority),
+            resources.getString(R.string.high_priority)
+        )
+        val arrayAdapter =
+            ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, taskPriorities)
+        binding.autoCompleteTextView.setAdapter(arrayAdapter)
+        binding.autoCompleteTextView.setText(
+            viewModel.selectedPriority.value ?:
+            viewModel.defaultPriority.value,
+            false
+        )
+        binding.autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            viewModel.setSelectedPriority(position)
+        }
 
     }
 

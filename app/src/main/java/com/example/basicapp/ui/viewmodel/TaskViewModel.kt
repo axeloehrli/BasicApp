@@ -19,19 +19,20 @@ import java.util.concurrent.TimeUnit
 
 class TaskViewModel(private val taskDao: TaskDao, application: Application) : ViewModel() {
 
-    private val tasksSortedByDate : LiveData<List<Task>> = taskDao.getItemsByTime().asLiveData()
-    private val tasksSortedByPriority : LiveData<List<Task>> = taskDao.getItemByPriority().asLiveData()
+    private val tasksSortedByDate: LiveData<List<Task>> = taskDao.getItemsByTime().asLiveData()
+    private val tasksSortedByPriority: LiveData<List<Task>> =
+        taskDao.getItemByPriority().asLiveData()
 
     private val workManager = WorkManager.getInstance(application)
 
-    fun sortedTasks(sortOrder : String) : LiveData<List<Task>> {
+    fun sortedTasks(sortOrder: String): LiveData<List<Task>> {
         return when (sortOrder) {
-            "sort_by_priority" ->  tasksSortedByPriority
+            "sort_by_priority" -> tasksSortedByPriority
             else -> tasksSortedByDate
         }
     }
 
-    fun searchDatabase(searchQuery : String) : LiveData<List<Task>> {
+    fun searchDatabase(searchQuery: String): LiveData<List<Task>> {
         return taskDao.searchDatabase(searchQuery).asLiveData()
     }
 
@@ -141,7 +142,31 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         updateItem(newTask)
     }
 
-    fun taskPriority(selectedPriority : String) : TaskPriority {
+    private var _selectedPriority = MutableLiveData<String?>()
+    val selectedPriority: LiveData<String?>
+        get() = _selectedPriority
+
+    private var _defaultPriority = MutableLiveData<String?>()
+    val defaultPriority: LiveData<String?>
+        get() = _defaultPriority
+
+    fun setSelectedPriority(menuItemPosition : Int) {
+        when(menuItemPosition) {
+            0 -> _selectedPriority.value = "Low priority"
+            1 -> _selectedPriority.value = "Medium priority"
+            else -> _selectedPriority.value = "High priority"
+        }
+    }
+
+    fun resetSelectedPriority() {
+        _selectedPriority.value = null
+    }
+
+    fun setDefaultPriority(defaultPriority: String) {
+        _defaultPriority.value = defaultPriority
+    }
+
+    fun taskPriority(selectedPriority: String): TaskPriority {
         return when (selectedPriority) {
             "Low priority" -> TaskPriority.LOW
             "Medium priority" -> TaskPriority.MEDIUM
@@ -149,7 +174,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         }
     }
 
-    fun taskPriorityString(taskPriority: TaskPriority) : String {
+    fun taskPriorityString(taskPriority: TaskPriority): String {
         return when (taskPriority) {
             TaskPriority.LOW -> "Low priority"
             TaskPriority.MEDIUM -> "Medium priority"
@@ -163,12 +188,12 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         get() = _selectedLocation
 
 
-    fun setLocation(location: LatLng) {
+    fun setSelectedLocation(location: LatLng) {
         _selectedLocation.value = location
     }
 
 
-    fun resetLocation() {
+    fun resetSelectedLocation() {
         _selectedLocation.value = null
     }
 
@@ -260,7 +285,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         return SimpleDateFormat.getTimeInstance(SHORT).format(Date(getTaskDateTimeInMillis()))
     }
 
-    fun resetDateTime() {
+    fun resetSelectedDateTime() {
         _selectedYear.value = null
         _selectedMonth.value = null
         _selectedDayOfMonth.value = null
