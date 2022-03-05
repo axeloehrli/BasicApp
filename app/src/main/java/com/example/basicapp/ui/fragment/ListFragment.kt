@@ -143,4 +143,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             binding.emptyMessageTextView.text = getString(R.string.no_matches)
         }
     }
+
+    private fun asasd() {
+
+    }
 }

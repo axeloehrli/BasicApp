@@ -90,6 +90,10 @@ class MainActivity : AppCompatActivity() {
         startLocationUpdates()
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         stopLocationUpdates()
@@ -100,14 +104,4 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         startLocationUpdates()
     }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
-    }
-
-
 }
