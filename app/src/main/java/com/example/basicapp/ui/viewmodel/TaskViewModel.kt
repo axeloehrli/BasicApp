@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Geocoder
 import androidx.lifecycle.*
 import androidx.work.*
+import com.example.basicapp.R
 import com.example.basicapp.data.model.TaskPriority
 import com.example.basicapp.data.room.TaskDao
 import com.example.basicapp.data.model.Task
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class TaskViewModel(private val taskDao: TaskDao, application: Application) : ViewModel() {
 
+    val context: Context = application.applicationContext
     private val tasksSortedByDate: LiveData<List<Task>> = taskDao.getItemsByTime().asLiveData()
     private val tasksSortedByPriority: LiveData<List<Task>> =
         taskDao.getItemByPriority().asLiveData()
@@ -152,9 +154,9 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
 
     fun setSelectedPriority(menuItemPosition : Int) {
         when(menuItemPosition) {
-            0 -> _selectedPriority.value = "Low priority"
-            1 -> _selectedPriority.value = "Medium priority"
-            else -> _selectedPriority.value = "High priority"
+            0 -> _selectedPriority.value = context.getString(R.string.low_priority)
+            1 -> _selectedPriority.value = context.getString(R.string.medium_priority)
+            else -> _selectedPriority.value = context.getString(R.string.high_priority)
         }
     }
 
@@ -168,19 +170,17 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
 
     fun taskPriority(selectedPriority: String): TaskPriority {
         return when (selectedPriority) {
-            "Low priority" -> TaskPriority.LOW
-            "Prioridad baja" -> TaskPriority.LOW
-            "Medium priority" -> TaskPriority.MEDIUM
-            "Prioridad mediana" -> TaskPriority.MEDIUM
+            context.getString(R.string.low_priority) -> TaskPriority.LOW
+            context.getString(R.string.medium_priority) -> TaskPriority.MEDIUM
             else -> TaskPriority.HIGH
         }
     }
 
     fun taskPriorityString(taskPriority: TaskPriority): String {
         return when (taskPriority) {
-            TaskPriority.LOW -> "Low priority"
-            TaskPriority.MEDIUM -> "Medium priority"
-            else -> "High priority"
+            TaskPriority.LOW -> context.getString(R.string.low_priority)
+            TaskPriority.MEDIUM -> context.getString(R.string.medium_priority)
+            else -> context.getString(R.string.high_priority)
         }
     }
 
