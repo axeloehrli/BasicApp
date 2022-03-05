@@ -25,17 +25,6 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
 
     private val workManager = WorkManager.getInstance(application)
 
-    fun sortedTasks(sortOrder: String): LiveData<List<Task>> {
-        return when (sortOrder) {
-            "sort_by_priority" -> tasksSortedByPriority
-            else -> tasksSortedByDate
-        }
-    }
-
-    fun searchDatabase(searchQuery: String): LiveData<List<Task>> {
-        return taskDao.searchDatabase(searchQuery).asLiveData()
-    }
-
     fun scheduleReminder(
         notificationTag: String,
         selectedTimeInMillis: Long

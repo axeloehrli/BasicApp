@@ -20,7 +20,7 @@ import com.example.basicapp.ui.adapter.Adapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
-class ListFragment : Fragment(), SearchView.OnQueryTextListener {
+class ListFragment : Fragment() {
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
@@ -72,7 +72,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         SettingsDataStore = SettingsDataStore(requireContext())
 
-        showSortedList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -80,7 +79,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val search = menu.findItem(R.id.menu_search)
         val searchView = search.actionView as SearchView?
         searchView?.isSubmitButtonEnabled = true
-        searchView?.setOnQueryTextListener(this)
         searchView?.isIconified = true
     }
 
@@ -106,45 +104,4 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        if (query != null) {
-            searchDatabase(query)
-        }
-        return true
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        if (newText != null && newText != "") {
-            searchDatabase(newText)
-        } else {
-            showSortedList()
-        }
-
-        return true
-    }
-
-    private fun showSortedList() {
-        SettingsDataStore.sortOrderFlow.asLiveData().observe(viewLifecycleOwner) { sortOrder ->
-            viewModel.sortedTasks(sortOrder).observe(viewLifecycleOwner) { tasks ->
-                adapter.submitList(tasks)
-                binding.emptyMessage.visibility =
-                    if (tasks.isEmpty()) View.VISIBLE else View.GONE
-                binding.emptyMessageTextView.text = getString(R.string.add_task_instruction)
-            }
-        }
-    }
-
-    private fun searchDatabase(newText: String?) {
-        val searchQuery = "%$newText%"
-        viewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { tasks ->
-            adapter.submitList(tasks)
-            binding.emptyMessage.visibility =
-                if (tasks.isEmpty()) View.VISIBLE else View.GONE
-            binding.emptyMessageTextView.text = getString(R.string.no_matches)
-        }
-    }
-
-    private fun asasd() {
-
-    }
 }
