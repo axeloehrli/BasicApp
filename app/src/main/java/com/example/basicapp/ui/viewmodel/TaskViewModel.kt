@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Geocoder
 import androidx.lifecycle.*
 import androidx.work.*
+import com.example.basicapp.R
 import com.example.basicapp.data.model.TaskPriority
 import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.worker.TaskReminderWorker
@@ -20,6 +21,7 @@ class TaskViewModel(application: Application) : ViewModel() {
 
 
     private val workManager = WorkManager.getInstance(application)
+    private val context = application.applicationContext
 
     fun scheduleReminder(
         notificationTag: String,
@@ -89,16 +91,16 @@ class TaskViewModel(application: Application) : ViewModel() {
 
     fun taskPriority(selectedPriority: String): TaskPriority {
         return when (selectedPriority) {
-            "Low priority" -> TaskPriority.LOW
-            "Medium priority" -> TaskPriority.MEDIUM
+            context.getString(R.string.low_priority)-> TaskPriority.LOW
+            context.getString(R.string.medium_priority) -> TaskPriority.MEDIUM
             else -> TaskPriority.HIGH
         }
     }
 
     fun taskPriorityString(taskPriority: TaskPriority): String {
         return when (taskPriority) {
-            TaskPriority.LOW -> "Low priority"
-            TaskPriority.MEDIUM -> "Medium priority"
+            TaskPriority.LOW -> context.getString(R.string.low_priority)
+            TaskPriority.MEDIUM -> context.getString(R.string.medium_priority)
             else -> "High priority"
         }
     }
