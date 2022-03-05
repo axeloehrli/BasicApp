@@ -169,7 +169,9 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
     fun taskPriority(selectedPriority: String): TaskPriority {
         return when (selectedPriority) {
             "Low priority" -> TaskPriority.LOW
+            "Prioridad baja" -> TaskPriority.LOW
             "Medium priority" -> TaskPriority.MEDIUM
+            "Prioridad mediana" -> TaskPriority.MEDIUM
             else -> TaskPriority.HIGH
         }
     }
