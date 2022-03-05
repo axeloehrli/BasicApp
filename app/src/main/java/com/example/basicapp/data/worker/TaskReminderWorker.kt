@@ -5,10 +5,7 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.basicapp.data.model.Task
-import com.example.basicapp.data.room.TaskRoomDatabase
 import com.example.basicapp.util.sendNotification
-import kotlinx.coroutines.flow.first
 
 class TaskReminderWorker(
     context: Context,

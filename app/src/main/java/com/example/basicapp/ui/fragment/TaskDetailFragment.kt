@@ -23,7 +23,6 @@ class TaskDetailFragment : Fragment() {
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
-            (activity?.application as TaskApplication).database.taskDao(),
             activity?.application as TaskApplication
         )
     }
@@ -60,10 +59,6 @@ class TaskDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.retrieveItem(navigationArgs.itemId).observe(viewLifecycleOwner) {
-            task = it
-            bind(task)
-        }
     }
 
     private fun showConfirmationDialog() {
@@ -80,18 +75,10 @@ class TaskDetailFragment : Fragment() {
                     geofencingClient,
                     task.title
                 )
-                deleteItem()
             }
             .show()
     }
 
-    /**
-     * Deletes the current item and navigates to the list fragment.
-     */
-    private fun deleteItem() {
-        viewModel.deleteItem(task)
-        findNavController().navigateUp()
-    }
 
     private fun editItem() {
 

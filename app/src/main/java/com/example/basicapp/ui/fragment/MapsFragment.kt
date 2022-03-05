@@ -33,7 +33,6 @@ class MapsFragment : Fragment() {
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
-            (activity?.application as TaskApplication).database.taskDao(),
             activity?.application as TaskApplication
         )
     }

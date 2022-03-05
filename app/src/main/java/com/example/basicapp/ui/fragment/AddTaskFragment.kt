@@ -40,7 +40,6 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
-            (activity?.application as TaskApplication).database.taskDao(),
             activity?.application as TaskApplication
         )
     }
@@ -94,16 +93,7 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
                     binding.titleEditText.text.toString(),
                     viewModel.getTaskDateTimeInMillis()
                 )
-                viewModel.addNewItem(
-                    viewModel.taskPriority(
-                        binding.autoCompleteTextView.text.toString()
-                    ),
-                    binding.titleEditText.text.toString(),
-                    binding.descriptionEditText.text.toString(),
-                    viewModel.getTaskDateTimeInMillis(),
-                    viewModel.selectedLocation.value?.latitude,
-                    viewModel.selectedLocation.value?.longitude
-                )
+
                 val geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
                 viewModel.selectedLocation.value.let { selectedLocation ->

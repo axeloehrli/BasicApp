@@ -6,7 +6,6 @@ import android.location.Geocoder
 import androidx.lifecycle.*
 import androidx.work.*
 import com.example.basicapp.data.model.TaskPriority
-import com.example.basicapp.data.room.TaskDao
 import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.worker.TaskReminderWorker
 import com.google.android.gms.maps.model.LatLng
@@ -17,11 +16,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class TaskViewModel(private val taskDao: TaskDao, application: Application) : ViewModel() {
+class TaskViewModel(application: Application) : ViewModel() {
 
-    private val tasksSortedByDate: LiveData<List<Task>> = taskDao.getItemsByTime().asLiveData()
-    private val tasksSortedByPriority: LiveData<List<Task>> =
-        taskDao.getItemByPriority().asLiveData()
 
     private val workManager = WorkManager.getInstance(application)
 
@@ -57,42 +53,7 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
     }
 
 
-    private fun insertItem(task: Task) {
-        viewModelScope.launch {
-            taskDao.insert(task)
-        }
-    }
 
-    fun addNewItem(
-        priority: TaskPriority,
-        title: String,
-        description: String,
-        time: Long,
-        latitude: Double?,
-        longitude: Double?
-    ) {
-        val newItem = Task(
-            priority = priority,
-            notificationTag = title,
-            title = title,
-            description = description,
-            time = time,
-            latitude = latitude,
-            longitude = longitude
-        )
-        insertItem(newItem)
-    }
-
-
-    fun retrieveItem(id: Int): LiveData<Task> {
-        return taskDao.getItem(id).asLiveData()
-    }
-
-    fun deleteItem(task: Task) {
-        viewModelScope.launch {
-            taskDao.delete(task)
-        }
-    }
 
     fun isEntryValid(taskTitle: String, taskDescription: String): Boolean {
         if (taskTitle.isBlank() || taskDescription.isBlank()) {
@@ -101,35 +62,6 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
         return true
     }
 
-    private fun updateItem(task: Task) {
-        viewModelScope.launch {
-            taskDao.update(task)
-        }
-    }
-
-    fun editItem(
-        id: Int,
-        notificationTag: String,
-        priority: TaskPriority,
-        title: String,
-        description: String,
-        time: Long,
-        latitude: Double?,
-        longitude: Double?
-    ) {
-        val newTask = Task(
-            id = id,
-            notificationTag = notificationTag,
-            priority = priority,
-            title = title,
-            description = description,
-            time = time,
-            latitude = latitude,
-            longitude = longitude
-        )
-
-        updateItem(newTask)
-    }
 
     private var _selectedPriority = MutableLiveData<String?>()
     val selectedPriority: LiveData<String?>
@@ -286,12 +218,12 @@ class TaskViewModel(private val taskDao: TaskDao, application: Application) : Vi
 }
 
 
-class TaskViewModelFactory(private val taskDao: TaskDao, val application: Application) :
+class TaskViewModelFactory(val application: Application) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskDao, application) as T
+            return TaskViewModel(application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

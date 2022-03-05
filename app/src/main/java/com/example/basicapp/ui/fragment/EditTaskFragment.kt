@@ -29,7 +29,6 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
 
     private val viewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(
-            (activity?.application as TaskApplication).database.taskDao(),
             activity?.application as TaskApplication
         )
     }
@@ -54,29 +53,6 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
 
 
         val id = navigationArgs.itemId
-        viewModel.retrieveItem(id).observe(viewLifecycleOwner) {
-
-            task = it
-
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = task.time
-
-            viewModel.updateDefaultDateTime(
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH),
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-            )
-
-            setDefaultLocation()
-            setDefaultPriority()
-
-            bind(it)
-
-            bindEditTexts()
-
-        }
     }
 
 
@@ -187,26 +163,8 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
                         binding.titleEditText.text.toString()
                     )
                 }
-                editItem()
             }
         }
-    }
-
-    private fun editItem() {
-        viewModel.editItem(
-            task.id,
-            task.notificationTag,
-            viewModel.taskPriority(
-                binding.autoCompleteTextView.text.toString()
-            ),
-            binding.titleEditText.text.toString(),
-            binding.descriptionEditText.text.toString(),
-            viewModel.getTaskDateTimeInMillis(),
-            viewModel.selectedLocation.value?.latitude ?: task.latitude,
-            viewModel.selectedLocation.value?.longitude ?: task.latitude
-        )
-
-        findNavController().navigateUp()
     }
 
     override fun onDateSet(

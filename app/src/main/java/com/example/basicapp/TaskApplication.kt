@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import com.example.basicapp.data.room.TaskRoomDatabase
 
 class TaskApplication : Application() {
 
@@ -18,8 +17,6 @@ class TaskApplication : Application() {
     companion object {
         const val CHANNEL_ID = "water_reminder_id"
     }
-
-    val database: TaskRoomDatabase by lazy { TaskRoomDatabase.getDatabase(this) }
 }
 
 private fun createChannel(context: Context,channelId: String, channelName: String) {
