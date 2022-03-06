@@ -1,27 +1,134 @@
 package com.example.basicapp.ui.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.location.Geocoder
 import androidx.lifecycle.*
 import androidx.work.*
 import com.example.basicapp.R
+import com.example.basicapp.data.RetrofitInstance
 import com.example.basicapp.data.model.TaskPriority
 import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.worker.TaskReminderWorker
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.text.DateFormat.MEDIUM
 import java.text.DateFormat.SHORT
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+data class ApiResponse<T>(
+    val body: T?,
+    val error: Boolean = false
+)
+
 class TaskViewModel(application: Application) : ViewModel() {
 
-
     private val workManager = WorkManager.getInstance(application)
+
+    @SuppressLint("StaticFieldLeak")
     private val context = application.applicationContext
+
+    private var _getTasksResponse = MutableSharedFlow<ApiResponse<List<Task>>>()
+    val getTasksResponse = _getTasksResponse
+
+    private var _getTaskResponse = MutableSharedFlow<ApiResponse<Task>>()
+    val getTaskResponse = _getTaskResponse
+
+    private var _deleteTaskResponse = MutableSharedFlow<ApiResponse<Task>>()
+    val deleteTaskResponse = _deleteTaskResponse
+    //var getTasksResponse: MutableLiveData<ApiResponse<Response<List<Task>>>> = MutableLiveData()
+    //var getTaskResponse: MutableLiveData<ApiResponse<Response<Task>>> = MutableLiveData()
+
+    fun deleteTask(id: Int) {
+        viewModelScope.launch {
+            try {
+                _deleteTaskResponse.emit(
+                    ApiResponse(
+                        body = RetrofitInstance.api.deleteTask(id).body()
+                    )
+                )
+            } catch (t: Throwable) {
+                _deleteTaskResponse.emit(
+                    ApiResponse(
+                        body = null,
+                        error =true
+                    )
+                )
+            }
+        }
+    }
+
+    fun getTask(id: Int) {
+        viewModelScope.launch {
+            try {
+               _getTaskResponse.emit(
+                   ApiResponse(
+                       body = RetrofitInstance.api.getTask(id).body()
+                   )
+               )
+            } catch (t: Throwable) {
+                _getTaskResponse.emit(
+                    ApiResponse(
+                        body = null,
+                        error = true
+                    )
+                )
+            }
+        }
+    }
+
+    fun getTasks() {
+        viewModelScope.launch {
+            try {
+                _getTasksResponse.emit(
+                    ApiResponse(
+                        body = RetrofitInstance.api.getTasks().body()
+                    )
+                )
+            } catch (t: Throwable) {
+                _getTasksResponse.emit(
+                    ApiResponse(
+                        body = null,
+                        error = true
+                    )
+                )
+            }
+        }
+    }
+
+/*    fun getTasks() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.api.getTasks()
+                getTasksResponse.postValue(
+                    ApiResponse.Success(
+                        response,
+                        "Tasks loaded successfully"
+                    )
+                )
+            } catch (t: Throwable) {
+                getTasksResponse.postValue(ApiResponse.Error(t.toString()))
+            }
+        }
+    }*/
+
+/*    fun getTask(id: Int) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.api.getTask(id)
+                getTaskResponse.postValue(ApiResponse.Success(response, "Task successfully loaded"))
+            } catch (t: Throwable) {
+                getTaskResponse.postValue(ApiResponse.Error(t.toString()))
+            }
+        }
+    }*/
 
     fun scheduleReminder(
         notificationTag: String,
@@ -55,8 +162,6 @@ class TaskViewModel(application: Application) : ViewModel() {
     }
 
 
-
-
     fun isEntryValid(taskTitle: String, taskDescription: String): Boolean {
         if (taskTitle.isBlank() || taskDescription.isBlank()) {
             return false
@@ -73,8 +178,8 @@ class TaskViewModel(application: Application) : ViewModel() {
     val defaultPriority: LiveData<String?>
         get() = _defaultPriority
 
-    fun setSelectedPriority(menuItemPosition : Int) {
-        when(menuItemPosition) {
+    fun setSelectedPriority(menuItemPosition: Int) {
+        when (menuItemPosition) {
             0 -> _selectedPriority.value = "Low priority"
             1 -> _selectedPriority.value = "Medium priority"
             else -> _selectedPriority.value = "High priority"
@@ -91,7 +196,7 @@ class TaskViewModel(application: Application) : ViewModel() {
 
     fun taskPriority(selectedPriority: String): TaskPriority {
         return when (selectedPriority) {
-            context.getString(R.string.low_priority)-> TaskPriority.LOW
+            context.getString(R.string.low_priority) -> TaskPriority.LOW
             context.getString(R.string.medium_priority) -> TaskPriority.MEDIUM
             else -> TaskPriority.HIGH
         }

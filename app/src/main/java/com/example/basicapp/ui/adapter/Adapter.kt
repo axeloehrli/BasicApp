@@ -2,6 +2,7 @@ package com.example.basicapp.ui.adapter
 
 import android.graphics.Color
 import android.location.Geocoder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -61,7 +62,7 @@ class Adapter
     // binds data to each list item
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val task = getItem(holder.adapterPosition)
-
+        Log.d("task", "BOUND")
         holder.itemView.setOnClickListener {
             onItemClicked(task.id)
         }

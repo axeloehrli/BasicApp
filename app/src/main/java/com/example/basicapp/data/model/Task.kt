@@ -5,6 +5,7 @@ import android.location.Geocoder
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import java.text.DateFormat.MEDIUM
 import java.text.DateFormat.SHORT
 import java.text.SimpleDateFormat
@@ -12,19 +13,19 @@ import java.util.*
 
 data class Task(
 
-    val id: Int = 0,
+    @SerializedName("ID")val id: Int = 0,
 
-    var notificationTag: String,
+    @SerializedName("NotificationTag")var notificationTag: String,
 
-    var title: String,
+    @SerializedName("Title")var title: String,
 
-    var description: String,
+    @SerializedName("Description")var description: String,
 
-    val time: Long,
+    @SerializedName("Time")val time: Long,
 
-    val latitude: Double?,
+    @SerializedName("Latitude")val latitude: Double?,
 
-    val longitude: Double?
+    @SerializedName("Longitude")val longitude: Double?
 
 )
 
@@ -44,5 +45,5 @@ fun Task.getFormattedLocation(geocoder: Geocoder): String? {
         1
     )
     if (address.isEmpty()) return "Unknown location"
-    return "${address.first().thoroughfare} ${address.first().subThoroughfare},${address.first().locality}"
+    return "${address.first().thoroughfare ?: return null} ${address.first().subThoroughfare ?: return null},${address.first().locality ?: return null}"
 }

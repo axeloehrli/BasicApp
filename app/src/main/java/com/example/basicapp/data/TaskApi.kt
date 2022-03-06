@@ -9,25 +9,25 @@ import retrofit2.http.*
 interface TaskApi {
 
     @GET("/tasks")
-    suspend fun getTodos(): Response<List<Task>>
+    suspend fun getTasks(): Response<List<Task>>
 
     @GET("/search/{query}")
-    suspend fun searchTodos(
+    suspend fun searchTask(
         @Path("query") query: String
     ): Response<List<Task>>
 
     @GET("/tasks/{id}")
-    suspend fun getTodo(
+    suspend fun getTask(
         @Path("id") id: Int
     ): Response<Task>
 
     @POST("/tasks")
-    suspend fun addTodo(
+    suspend fun addTask(
         @Body params : Task
     ) : Response<Task>
 
     @HTTP(method = "DELETE", path = "/tasks/{id}", hasBody = true)
-    suspend fun deleteTodo(
+    suspend fun deleteTask(
         @Path("id") id : Int,
     ) : Response<Task>
 }

@@ -1,15 +1,19 @@
 package com.example.basicapp.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.basicapp.R
 import com.example.basicapp.TaskApplication
+import com.example.basicapp.data.model.ApiResponse
 import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.model.getFormattedDateAndTime
 import com.example.basicapp.databinding.FragmentTaskDetailBinding
@@ -18,6 +22,8 @@ import com.example.basicapp.ui.viewmodel.TaskViewModel
 import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class TaskDetailFragment : Fragment() {
 
@@ -59,6 +65,38 @@ class TaskDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getTask(navigationArgs.itemId)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getTaskResponse.collectLatest { response ->
+                if (response.error) {
+                    Log.d("task", "Error loading task")
+                } else {
+                    response.body?.let {
+                        Log.d("task", "Task successfully loaded ")
+                        bind(it)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.deleteTaskResponse.collectLatest { response ->
+                if (response.error) {
+                    Log.d("task", "Could not delete task")
+                } else {
+                    Log.d("task", "Task successfully deleted")
+                    val action = TaskDetailFragmentDirections.actionTaskDetailFragmentToFragmentAllTasks()
+                    findNavController().navigate(action)
+                }
+            }
+        }
+
+
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     private fun showConfirmationDialog() {
@@ -68,13 +106,14 @@ class TaskDetailFragment : Fragment() {
             .setCancelable(false)
             .setNegativeButton(getString(R.string.no)) { _, _ -> }
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                viewModel.cancelReminder(task.title)
+                viewModel.deleteTask(navigationArgs.itemId)
+                /*viewModel.cancelReminder(task.title)
                 val geofencingClient = LocationServices.getGeofencingClient(requireContext())
                 removeGeofence(
                     requireContext(),
                     geofencingClient,
                     task.title
-                )
+                )*/
             }
             .show()
     }
