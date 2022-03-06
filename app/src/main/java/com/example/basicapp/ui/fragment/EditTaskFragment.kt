@@ -108,12 +108,6 @@ class EditTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         )
     }
 
-    private fun setDefaultPriority() {
-        viewModel.setDefaultPriority(
-            viewModel.taskPriorityString(task.priority)
-        )
-    }
-
     private fun bind(task: Task) {
         binding.apply {
             titleEditText.setText(task.title)

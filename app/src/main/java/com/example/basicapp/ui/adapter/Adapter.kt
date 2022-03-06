@@ -23,7 +23,6 @@ class Adapter
             override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
                 return when {
                     oldItem.id != newItem.id -> false
-                    oldItem.priority != newItem.priority -> false
                     oldItem.title != newItem.title -> false
                     oldItem.description != newItem.description -> false
                     oldItem.time != newItem.time -> false
@@ -41,7 +40,6 @@ class Adapter
 
         fun bind(task: Task) {
             binding.apply {
-                taskPriority.setCardBackgroundColor(task.getPriorityColor())
                 taskTitle.text = task.title
                 taskDescription.text = task.description
                 taskDayOfWeek.text = task.getFormattedDayOfWeek()
