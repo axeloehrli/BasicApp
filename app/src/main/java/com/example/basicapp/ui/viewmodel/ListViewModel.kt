@@ -13,20 +13,17 @@ import com.example.basicapp.data.model.Task
 import com.example.basicapp.data.worker.TaskReminderWorker
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import java.text.DateFormat.MEDIUM
 import java.text.DateFormat.SHORT
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-data class ApiResponse<T>(
-    val body: T?,
-    val error: Boolean = false
-)
+sealed class ApiResponse<T> {
+    data class Success<T>(val list: T?) : ApiResponse<T>()
+    data class Error<T>(val error: Throwable) : ApiResponse<T>()
+}
 
 class TaskViewModel(application: Application) : ViewModel() {
 
@@ -35,7 +32,7 @@ class TaskViewModel(application: Application) : ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private val context = application.applicationContext
 
-    private var _getTasksResponse = MutableSharedFlow<ApiResponse<List<Task>>>()
+    private var _getTasksResponse = MutableSharedFlow<ApiResponse<List<Task>>>(replay = 1)
     val getTasksResponse = _getTasksResponse
 
     private var _getTaskResponse = MutableSharedFlow<ApiResponse<Task>>()
@@ -43,23 +40,67 @@ class TaskViewModel(application: Application) : ViewModel() {
 
     private var _deleteTaskResponse = MutableSharedFlow<ApiResponse<Task>>()
     val deleteTaskResponse = _deleteTaskResponse
-    //var getTasksResponse: MutableLiveData<ApiResponse<Response<List<Task>>>> = MutableLiveData()
-    //var getTaskResponse: MutableLiveData<ApiResponse<Response<Task>>> = MutableLiveData()
 
+    private var _addTaskResponse = MutableSharedFlow<ApiResponse<Task>>()
+    val addTaskResponse = _addTaskResponse
+
+    fun getTasks() {
+        viewModelScope.launch {
+            try {
+                _getTasksResponse.emit(
+                    ApiResponse.Success(
+                        RetrofitInstance.api.getTasks().body()
+                    )
+                )
+            } catch (t: Throwable) {
+                _getTasksResponse.emit(
+                    ApiResponse.Error(t)
+                )
+            }
+        }
+    }
+
+    fun addTask(task: Task) {
+        viewModelScope.launch {
+            try {
+                _addTaskResponse.emit(
+                    ApiResponse.Success(
+                        RetrofitInstance.api.addTask(task).body()
+                    )
+                )
+            } catch (t: Throwable) {
+                _addTaskResponse.emit(
+                    ApiResponse.Error(t)
+                )
+            }
+        }
+    }
+
+
+    /*fun getLDTasks() {
+        viewModelScope.launch {
+            try {
+                getLDTasksResponse.postValue(
+                    ApiResponse(
+                        RetrofitInstance.api.getTasks().body()
+                    )
+                )
+            } catch (t: Throwable) {
+                getLDTasksResponse.postValue(ApiResponse(null, true))
+            }
+        }
+    }*/
     fun deleteTask(id: Int) {
         viewModelScope.launch {
             try {
                 _deleteTaskResponse.emit(
-                    ApiResponse(
-                        body = RetrofitInstance.api.deleteTask(id).body()
+                    ApiResponse.Success(
+                        RetrofitInstance.api.deleteTask(id).body()
                     )
                 )
             } catch (t: Throwable) {
                 _deleteTaskResponse.emit(
-                    ApiResponse(
-                        body = null,
-                        error =true
-                    )
+                    ApiResponse.Error(t)
                 )
             }
         }
@@ -69,55 +110,19 @@ class TaskViewModel(application: Application) : ViewModel() {
         viewModelScope.launch {
             try {
                _getTaskResponse.emit(
-                   ApiResponse(
-                       body = RetrofitInstance.api.getTask(id).body()
+                   ApiResponse.Success(
+                       RetrofitInstance.api.getTask(id).body()
                    )
                )
             } catch (t: Throwable) {
                 _getTaskResponse.emit(
-                    ApiResponse(
-                        body = null,
-                        error = true
-                    )
+                    ApiResponse.Error(t)
                 )
             }
         }
     }
 
-    fun getTasks() {
-        viewModelScope.launch {
-            try {
-                _getTasksResponse.emit(
-                    ApiResponse(
-                        body = RetrofitInstance.api.getTasks().body()
-                    )
-                )
-            } catch (t: Throwable) {
-                _getTasksResponse.emit(
-                    ApiResponse(
-                        body = null,
-                        error = true
-                    )
-                )
-            }
-        }
-    }
 
-/*    fun getTasks() {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.getTasks()
-                getTasksResponse.postValue(
-                    ApiResponse.Success(
-                        response,
-                        "Tasks loaded successfully"
-                    )
-                )
-            } catch (t: Throwable) {
-                getTasksResponse.postValue(ApiResponse.Error(t.toString()))
-            }
-        }
-    }*/
 
 /*    fun getTask(id: Int) {
         viewModelScope.launch {

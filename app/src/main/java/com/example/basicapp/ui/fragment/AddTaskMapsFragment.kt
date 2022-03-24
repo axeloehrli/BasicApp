@@ -1,24 +1,29 @@
 package com.example.basicapp.ui.fragment
 
 import android.annotation.SuppressLint
+import android.location.Geocoder
 import android.location.Location
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.basicapp.R
 import com.example.basicapp.TaskApplication
 import com.example.basicapp.databinding.FragmentMapsBinding
+import com.example.basicapp.ui.viewmodel.*
 import com.example.basicapp.util.addGeofence
 import com.example.basicapp.util.isNetworkAvailable
-import com.example.basicapp.ui.viewmodel.TaskViewModel
-import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
 import com.google.android.gms.location.*
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -27,12 +32,20 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
 class MapsFragment : Fragment() {
 
-    private val viewModel: TaskViewModel by activityViewModels {
-        TaskViewModelFactory(
+    private val addTaskViewModel : AddTaskViewModel by activityViewModels {
+        AddTaskViewModelFactory(
+            activity?.application as TaskApplication
+        )
+    }
+
+    private val taskDetailViewModel : TaskDetailViewModel by activityViewModels {
+        TaskDetailViewModelFactory(
             activity?.application as TaskApplication
         )
     }
@@ -56,12 +69,8 @@ class MapsFragment : Fragment() {
                     .setTitle("Location")
                     .setMessage("Do you want to add this task location?")
                     .setPositiveButton("Ok") { _, _ ->
-                        viewModel.setSelectedLocation(location)
-                        Toast.makeText(
-                            requireContext(),
-                            viewModel.locationFormattedText(requireContext()),
-                            Toast.LENGTH_LONG
-                        ).show()
+                        addTaskViewModel.setSelectedLocation(location)
+                        taskDetailViewModel.setSelectedLocation(location.latitude, location.longitude)
                         findNavController().navigateUp()
                     }
                     .setNegativeButton("Cancel") { _, _ -> }
@@ -77,6 +86,7 @@ class MapsFragment : Fragment() {
         }
 
         map.setOnMapClickListener { location ->
+            taskDetailViewModel.setSelectedLocation(location.latitude, location.longitude)
             addGeofence(
                 requireContext(),
                 geofencingClient,
@@ -157,6 +167,11 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(mapCallback)
+        viewLifecycleOwner.lifecycleScope.launch {
+            taskDetailViewModel.selectedLocation.collect {
+                Log.d("task", "MAP LOCATION: $it")
+            }
+        }
     }
 
     override fun onStart() {
