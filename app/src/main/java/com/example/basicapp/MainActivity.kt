@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         stopLocationUpdates()
     }
-    // enables up button
 
     override fun onStart() {
         super.onStart()

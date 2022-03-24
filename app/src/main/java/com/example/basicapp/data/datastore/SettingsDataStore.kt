@@ -28,7 +28,7 @@ class SettingsDataStore(context: Context) {
         }
         .map {
             preferences ->
-            preferences[SORT_BY] ?: "sort_by_none"
+            preferences[SORT_BY] ?: "sort_by_time"
         }
 
 

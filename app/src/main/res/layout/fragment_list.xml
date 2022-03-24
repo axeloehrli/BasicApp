@@ -21,12 +21,13 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false" />
 
-                <TextView
-                    android:id="@+id/empty_message_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/empty_message_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="20sp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/button_add"
@@ -44,9 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:background="@android:color/transparent"
-            />
+                android:background="@android:color/transparent" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

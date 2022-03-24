@@ -13,7 +13,9 @@ import java.util.*
 
 data class Task(
 
-    @SerializedName("ID")val id: Int = 0,
+    @SerializedName("ID")val id: Long? ,
+
+    @SerializedName("PriorityLevel") val priorityLevel : Int,
 
     @SerializedName("NotificationTag")var notificationTag: String,
 
@@ -32,8 +34,7 @@ data class Task(
 
 fun Task.getFormattedDateAndTime(): String =
     SimpleDateFormat.getDateTimeInstance(MEDIUM, SHORT).format(time)
-
-
+fun Task.getFormattedDate(): String = SimpleDateFormat.getDateInstance(MEDIUM).format(time)
 fun Task.getFormattedTime(): String = SimpleDateFormat.getTimeInstance(SHORT).format(time)
 fun Task.getFormattedMonth(): String = SimpleDateFormat("MMM", Locale.getDefault()).format(time)
 fun Task.getFormattedDayOfMonth(): String = SimpleDateFormat("d", Locale.getDefault()).format(time)
@@ -45,5 +46,12 @@ fun Task.getFormattedLocation(geocoder: Geocoder): String? {
         1
     )
     if (address.isEmpty()) return "Unknown location"
-    return "${address.first().thoroughfare ?: return null} ${address.first().subThoroughfare ?: return null},${address.first().locality ?: return null}"
+    return "${address.first().thoroughfare ?: return null} ${address.first().subThoroughfare ?: return null}, ${address.first().locality ?: return null}"
+}
+fun Task.getPriorityColor() : Int {
+    return when (priorityLevel) {
+        1 -> Color.GREEN
+        2 -> Color.YELLOW
+        else -> Color.RED
+    }
 }

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/axelo/.gradle/caches/transforms-3/55ec6fd642c57d2b71ca50af20c83b24/transformed/appcompat-1.4.0/res/layout/support_simple_spinner_dropdown_item.xml" value="0.1" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.13385416666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/drawable/ic_baseline_add_circle_outline_24.xml" value="0.12447916666666667" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/drawable/ic_baseline_dark_mode_24.xml" value="0.1388888888888889" />
@@ -17,15 +18,16 @@
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/dropdown_menu_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/first_fragment.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_add_task.xml" value="0.2556179775280899" />
-        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_all_tasks.xml" value="0.1" />
+        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_all_tasks.xml" value="0.15" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_completed_tasks.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_deleted_tasks.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_edit_task.xml" value="0.22" />
+        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_edit_task_maps.xml" value="0.1" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_first.xml" value="0.18" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_list.xml" value="0.14" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_maps.xml" value="0.22" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_second.xml" value="0.18" />
-        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_task_detail.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/fragment_task_detail.xml" value="0.1" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/item.xml" value="0.2804878048780488" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/item_task.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/axelo/AndroidStudioProjects/BasicApp/app/src/main/res/layout/item_xml.xml" value="0.1" />

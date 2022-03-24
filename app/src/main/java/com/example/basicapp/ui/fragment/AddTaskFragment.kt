@@ -3,6 +3,7 @@ package com.example.basicapp.ui.fragment
 import android.Manifest
 import android.app.*
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,8 +13,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -21,13 +22,19 @@ import com.example.basicapp.*
 import com.example.basicapp.databinding.FragmentAddTaskBinding
 import java.util.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.example.basicapp.ui.viewmodel.TaskViewModel
-import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
+import com.example.basicapp.data.model.Task
+import com.example.basicapp.ui.viewmodel.*
 import com.example.basicapp.util.addGeofence
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
@@ -38,13 +45,12 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
     private val runningQOrLater =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
-    private val viewModel: TaskViewModel by activityViewModels {
-        TaskViewModelFactory(
+    private val viewModel: AddTaskViewModel by activityViewModels {
+        AddTaskViewModelFactory(
             activity?.application as TaskApplication
         )
     }
 
-    // inflates layout
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,126 +61,143 @@ class AddTaskFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         return (binding.root)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.lifecycleOwner = viewLifecycleOwner
 
-        binding.dateEditText.setOnClickListener {
-            DatePickerDialog(
-                requireContext(),
-                this,
-                viewModel.selectedYear.value ?: viewModel.defaultYear,
-                viewModel.selectedMonth.value ?: viewModel.defaultMonth,
-                viewModel.selectedDayOfMonth.value ?: viewModel.defaultDayOfMonth
-            ).show()
-        }
-
-        binding.timeEditText.setOnClickListener {
-            TimePickerDialog(
-                requireContext(),
-                this,
-                viewModel.selectedHour.value ?: viewModel.defaultHour,
-                viewModel.selectedMinute.value ?: viewModel.defaultMinute,
-                false
-            ).show()
-        }
-
-        // creates a time picker dialog with the time variables
-
-        binding.locationEditText.setOnClickListener {
-            checkPermissions()
-        }
-
-        binding.addButton.setOnClickListener {
-            if (isEntryValid()) {
-                viewModel.scheduleReminder(
-                    binding.titleEditText.text.toString(),
-                    viewModel.getTaskDateTimeInMillis()
-                )
-
-                val geofencingClient = LocationServices.getGeofencingClient(requireContext())
-
-                viewModel.selectedLocation.value.let { selectedLocation ->
-                    selectedLocation ?: return@let
-                    addGeofence(
-                        requireContext(),
-                        geofencingClient,
-                        selectedLocation,
-                        binding.titleEditText.text.toString()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedLocation.collect {
+                    binding.locationEditText.setText(
+                        viewModel.locationFormattedText(Geocoder(requireContext()))
                     )
                 }
-                findNavController().navigateUp()
             }
         }
-    }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.dateVariables.collect {
+                    binding.dateEditText.setText(viewModel.formattedDateText())
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.timeVariables.collect {
+                    binding.timeEditText.setText(viewModel.formattedTimeText())
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.addTaskResponse.collect { apiResponse ->
+                    when (apiResponse) {
+                        is ApiResponse.Success -> {
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.updateDefaultDateTime()
-        viewModel.setDefaultPriority(
-            resources.getString(R.string.low_priority)
-        )
-        bindEditTexts()
+                            viewModel.scheduleReminder(
+                                binding.titleEditText.text.toString(),
+                                viewModel.getTimeInMillis()
+                            )
 
-    }
+                            val geofencingClient =
+                                LocationServices.getGeofencingClient(requireContext())
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.resetSelectedDateTime()
-        viewModel.resetSelectedLocation()
-        viewModel.resetSelectedPriority()
+                            viewModel.selectedLocation.value.let { selectedLocation ->
+                                selectedLocation ?: return@let
+                                addGeofence(
+                                    requireContext(),
+                                    geofencingClient,
+                                    selectedLocation,
+                                    binding.titleEditText.text.toString()
+                                )
+                            }
+
+                            findNavController().navigateUp()
+
+                        }
+                        is ApiResponse.Error -> {
+                            Log.d("task", apiResponse.error.toString())
+                            Snackbar.make(
+                                binding.coordinatorLayout,
+                                "There was a network error",
+                                LENGTH_LONG
+                            ).setAction("Ok") {}.show()
+                        }
+                    }
+                }
+            }
+        }
+
+        binding.apply {
+            dateEditText.setOnClickListener {
+                DatePickerDialog(
+                    requireContext(),
+                    this@AddTaskFragment,
+                    viewModel.dateVariables.value.getValue("year"),
+                    viewModel.dateVariables.value.getValue("month"),
+                    viewModel.dateVariables.value.getValue("dayOfMonth")
+                ).show()
+            }
+
+            timeEditText.setOnClickListener {
+                TimePickerDialog(
+                    requireContext(),
+                    this@AddTaskFragment,
+                    viewModel.timeVariables.value.getValue("hour"),
+                    viewModel.timeVariables.value.getValue("minute"),
+                    false
+                ).show()
+            }
+
+
+            locationEditText.setOnClickListener {
+                checkPermissions()
+            }
+
+            addButton.setOnClickListener {
+                if (isEntryValid()) {
+                    viewModel.addTask(
+                        Task(
+                            0,
+                            viewModel.getPriority(
+                                binding.autoCompleteTextView.text.toString()
+                            ),
+                            binding.titleEditText.text.toString(),
+                            binding.titleEditText.text.toString(),
+                            binding.descriptionEditText.text.toString(),
+                            viewModel.getTimeInMillis(),
+                            viewModel.selectedLocation.value?.latitude,
+                            viewModel.selectedLocation.value?.longitude,
+                        )
+                    )
+                }
+            }
+            val priorities = listOf(
+                getString(R.string.low_priority),
+                getString(R.string.medium_priority),
+                getString(R.string.high_priority),
+            )
+            val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, priorities)
+            binding.autoCompleteTextView.setText(
+                getString(R.string.low_priority)
+            )
+            binding.autoCompleteTextView.setAdapter(arrayAdapter)
+        }
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        viewModel.setSelectedDate(year, month, dayOfMonth)
-        bindEditTexts()
+        viewModel.setDateVariables(year, month, dayOfMonth)
     }
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        viewModel.setSelectedTime(hourOfDay, minute)
-        bindEditTexts()
+        viewModel.setTimeVariables(hourOfDay, minute)
     }
-
 
     private fun isEntryValid(): Boolean {
         return viewModel.isEntryValid(
             binding.titleEditText.text.toString(),
             binding.descriptionEditText.text.toString()
         )
-    }
-
-    private fun bindEditTexts() {
-        binding.dateEditText.setText(
-            viewModel.dateFormattedText()
-        )
-
-        binding.timeEditText.setText(
-            viewModel.timeFormattedText()
-        )
-
-        binding.locationEditText.setText(
-            viewModel.locationFormattedText(requireContext())
-        )
-
-        val taskPriorities = listOf(
-            resources.getString(R.string.low_priority),
-            resources.getString(R.string.medium_priority),
-            resources.getString(R.string.high_priority)
-        )
-        val arrayAdapter =
-            ArrayAdapter(requireContext(), R.layout.dropdown_menu_item, taskPriorities)
-        binding.autoCompleteTextView.setAdapter(arrayAdapter)
-        binding.autoCompleteTextView.setText(
-            viewModel.selectedPriority.value ?:
-            viewModel.defaultPriority.value,
-            false
-        )
-        binding.autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
-            viewModel.setSelectedPriority(position)
-        }
-
     }
 
     private fun navigateToMapFragment() {

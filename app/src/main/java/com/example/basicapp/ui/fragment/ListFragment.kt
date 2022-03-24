@@ -3,45 +3,37 @@ package com.example.basicapp.ui.fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.basicapp.*
 import com.example.basicapp.data.datastore.SettingsDataStore
-import com.example.basicapp.data.model.ApiResponse
-import com.example.basicapp.databinding.FragmentAllTasksBinding
-import com.example.basicapp.ui.viewmodel.TaskViewModel
-import com.example.basicapp.ui.viewmodel.TaskViewModelFactory
+import com.example.basicapp.databinding.FragmentListBinding
 import com.example.basicapp.ui.adapter.Adapter
+import com.example.basicapp.ui.viewmodel.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
-    private val viewModel: TaskViewModel by activityViewModels {
-        TaskViewModelFactory(
-            activity?.application as TaskApplication
-        )
-    }
+    private val viewModel: ListViewModel by viewModels()
 
-    private lateinit var binding: FragmentAllTasksBinding
+    private lateinit var binding: FragmentListBinding
     private lateinit var adapter: Adapter
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var buttonAdd: FloatingActionButton
 
     private lateinit var SettingsDataStore: SettingsDataStore
-
-    private var shouldShowList = true
 
     override fun onCreateView(
 
@@ -51,19 +43,14 @@ class ListFragment : Fragment() {
 
     ): (View) {
         setHasOptionsMenu(true)
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_all_tasks, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_list, container, false)
         return (binding.root)
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        binding.lifecycleOwner = this
+        SettingsDataStore = SettingsDataStore(requireContext())
 
         buttonAdd = binding.buttonAdd
         buttonAdd.setOnClickListener {
@@ -80,43 +67,135 @@ class ListFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        /*viewModel.getTasks()
-        viewModel.getTasksResponse.observe(viewLifecycleOwner) { apiResponse ->
-            when(apiResponse) {
-                is ApiResponse.Success -> {
-                    Log.d("task", apiResponse.message.toString())
-                    adapter.submitList(apiResponse.data?.body())
-                }
-                is ApiResponse.Error -> {
-                    Log.d("task", apiResponse.message.toString())
-                }
-            }
-        }*/
-
-        viewModel.getTasks()
-
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getTasksResponse.collectLatest { response ->
-                if (response.error) {
-                    Log.d("task", "Error loading tasks tasks")
-                } else {
-                    adapter.submitList(response.body)
-                    Log.d("task", "Tasks loaded")
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                SettingsDataStore.sortOrderFlow.collect { sortOrder ->
+                    Log.d("task", sortOrder)
+                    when (sortOrder) {
+                        "sort_by_time" -> viewModel.getTasksByTime()
+                        "sort_by_priority" -> viewModel.sortTasksByPriority()
+                    }
+                    binding.swipeToRefresh.setOnRefreshListener {
+                        when (sortOrder) {
+                            "sort_by_time" -> viewModel.getTasksByTime()
+                            "sort_by_priority" -> viewModel.sortTasksByPriority()
+                        }
+                    }
                 }
             }
         }
 
-        SettingsDataStore = SettingsDataStore(requireContext())
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchTasksResponse.collect { apiResponse ->
+                    when (apiResponse) {
+                        is ApiResponse.Success -> {
+                            adapter.submitList(apiResponse.data)
+                            if (apiResponse.data?.isEmpty() == true) {
+                                showNothingFoundMessage("Nothing found")
+                            } else {
+                                hideNothingFoundMessage()
+                            }
+                        }
+                        is ApiResponse.Error -> {
+                            Log.d("task", "SEARCH ERROR : ${apiResponse.error}")
+                            showNothingFoundMessage("There was a network error")
+                        }
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getTasksByTimeResponse.collect { apiResponse ->
+                    when (apiResponse) {
+                        is ApiResponse.Success -> {
+                            adapter.submitList(apiResponse.data)
+                            stopRefreshing()
+                            hideProgressBar()
+                            if (apiResponse.data?.isEmpty() == true) {
+                                showNothingFoundMessage("Press + to add a task")
+                            } else {
+                                hideNothingFoundMessage()
+                            }
+                        }
+                        is ApiResponse.Error -> {
+                            Log.d("task", apiResponse.error.toString())
+                            stopRefreshing()
+                            hideProgressBar()
+                            showErrorSnackbar()
+                        }
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getTasksByPriorityResponse.collect { apiResponse ->
+                    when (apiResponse) {
+                        is ApiResponse.Success -> {
+                            adapter.submitList(apiResponse.data)
+                            stopRefreshing()
+                            hideProgressBar()
+                            if (apiResponse.data?.isEmpty() == true) {
+                                showNothingFoundMessage("Press + to add a Task")
+                            } else {
+                                hideNothingFoundMessage()
+                            }
+                        }
+                        is ApiResponse.Error -> {
+                            stopRefreshing()
+                            hideProgressBar()
+                            showErrorSnackbar()
+                        }
+                    }
+                }
+            }
+        }
 
     }
 
+    private fun showProgressBar() {
+        Log.d("task", "Progress bar shown")
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar.visibility = View.GONE
+    }
+
+    private fun isRefreshing(): Boolean {
+        return binding.swipeToRefresh.isRefreshing
+    }
+
+    private fun stopRefreshing() {
+        binding.swipeToRefresh.isRefreshing = false
+    }
+
+    private fun showErrorSnackbar() {
+        Snackbar.make(
+            binding.coordinatorLayout,
+            "There was a network error",
+            LENGTH_LONG
+        ).setAction("Ok") {}.show()
+    }
+
+    private fun showNothingFoundMessage(message: String) {
+        binding.emptyMessageTextView.visibility = View.VISIBLE
+        binding.emptyMessageTextView.text = message
+    }
+
+    private fun hideNothingFoundMessage() {
+        binding.emptyMessageTextView.visibility = View.GONE
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
         val search = menu.findItem(R.id.menu_search)
         val searchView = search.actionView as SearchView?
-        searchView?.isSubmitButtonEnabled = true
-        searchView?.isIconified = true
+        searchView?.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -124,7 +203,7 @@ class ListFragment : Fragment() {
             R.id.sort_by_date -> {
                 lifecycleScope.launch {
                     SettingsDataStore.saveSortByToPreferences(
-                        "sort_by_date",
+                        "sort_by_time",
                         requireContext()
                     )
                 }
@@ -141,4 +220,20 @@ class ListFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        query?.let {
+            if (query == "") {
+                viewModel.getTasksByTime()
+            } else {
+                viewModel.searchTasks(it)
+            }
+        }
+        return true
+    }
 }

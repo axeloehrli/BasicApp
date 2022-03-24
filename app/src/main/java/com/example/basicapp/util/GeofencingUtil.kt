@@ -15,17 +15,15 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-
 fun addGeofence(
     context: Context,
     geofencingClient: GeofencingClient,
     location: LatLng,
-    taskTitle: String = "Hello",
-    map: GoogleMap? = null
+    taskTitle: String ,
 ) {
     val geofence = Geofence.Builder()
         .setRequestId(taskTitle)
-        .setCircularRegion(location.latitude, location.longitude, 20f)
+        .setCircularRegion(location.latitude, location.longitude, 200f)
         .setExpirationDuration(Geofence.NEVER_EXPIRE)
         .setLoiteringDelay(3000)
         .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER )
@@ -57,8 +55,6 @@ fun addGeofence(
     ) {
         geofencingClient.addGeofences(geofencingRequest.build(), geofencePendingIntent)
             .addOnSuccessListener {
-
-                map?.addMarker(MarkerOptions().position(location).title("HELLO"))
 
                 val geocoder = Geocoder(context)
 

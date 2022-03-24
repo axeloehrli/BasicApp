@@ -1,8 +1,6 @@
 package com.example.basicapp.ui.adapter
 
-import android.graphics.Color
 import android.location.Geocoder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -12,7 +10,7 @@ import com.example.basicapp.data.model.*
 import com.example.basicapp.databinding.ItemTaskBinding
 
 class Adapter
-    (private val onItemClicked: (Int) -> Unit) :
+    (private val onItemClicked: (Long) -> Unit) :
     ListAdapter<Task, Adapter.ViewHolder>(DiffCallback) {
 
     companion object {
@@ -22,22 +20,13 @@ class Adapter
             }
 
             override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
-                return when {
-                    oldItem.id != newItem.id -> false
-                    oldItem.title != newItem.title -> false
-                    oldItem.description != newItem.description -> false
-                    oldItem.time != newItem.time -> false
-                    oldItem.latitude != newItem.latitude -> false
-                    oldItem.longitude != newItem.longitude -> false
-                    else -> true
-                }
+                return oldItem == newItem
             }
         }
     }
 
     class ViewHolder(private var binding: ItemTaskBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
 
         fun bind(task: Task) {
             binding.apply {
@@ -48,7 +37,7 @@ class Adapter
                 taskMonth.text = task.getFormattedMonth()
                 taskTime.text = task.getFormattedTime()
                 taskLocation.text = task.getFormattedLocation(Geocoder(taskLayout.context))
-
+                taskPriority.setCardBackgroundColor(task.getPriorityColor())
                 executePendingBindings()
             }
         }
@@ -62,13 +51,10 @@ class Adapter
     // binds data to each list item
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val task = getItem(holder.adapterPosition)
-        Log.d("task", "BOUND")
         holder.itemView.setOnClickListener {
-            onItemClicked(task.id)
+            onItemClicked(task.id ?: return@setOnClickListener)
         }
         holder.bind(task)
-
-
     }
 }
 

@@ -9,7 +9,7 @@
         android:id="@+id/fragment_all_tasks"
         android:name="com.example.basicapp.ui.fragment.ListFragment"
         android:label="All Tasks"
-        tools:layout="@layout/fragment_all_tasks" >
+        tools:layout="@layout/fragment_list" >
 
         <action
             android:id="@+id/action_fragment_all_tasks_to_addTaskFragment"
@@ -34,10 +34,9 @@
         android:id="@+id/taskDetailFragment"
         android:name="com.example.basicapp.ui.fragment.TaskDetailFragment"
         android:label="Task Details" >
-
         <argument
             android:name="item_id"
-            app:argType="integer" />
+            app:argType="long" />
         <action
             android:id="@+id/action_taskDetailFragment_to_editTaskFragment"
             app:destination="@id/editTaskFragment" />
@@ -51,17 +50,19 @@
         android:label="Edit Task" >
         <argument
             android:name="item_id"
-            app:argType="integer" />
+            app:argType="long" />
         <action
             android:id="@+id/action_editTaskFragment_to_fragment_all_tasks"
             app:destination="@id/fragment_all_tasks" />
         <action
-            android:id="@+id/action_editTaskFragment_to_mapsFragment"
-            app:destination="@id/mapsFragment" />
+            android:id="@+id/action_editTaskFragment_to_editTaskMapsFragment"
+            app:destination="@id/editTaskMapsFragment" />
+
+
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.basicapp.ui.fragment.MapsFragment"
+        android:name="com.example.basicapp.ui.fragment.AddTaskMapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action
@@ -71,6 +72,11 @@
             android:id="@+id/action_mapsFragment_to_editTaskFragment"
             app:destination="@id/editTaskFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/editTaskMapsFragment"
+        android:name="com.example.basicapp.ui.fragment.EditTaskMapsFragment"
+        android:label="fragment_edit_task_maps"
+        tools:layout="@layout/fragment_edit_task_maps" />
 
 
 </navigation>

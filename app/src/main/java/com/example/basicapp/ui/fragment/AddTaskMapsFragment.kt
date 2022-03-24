@@ -36,16 +36,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
-class MapsFragment : Fragment() {
+class AddTaskMapsFragment : Fragment() {
 
     private val addTaskViewModel : AddTaskViewModel by activityViewModels {
         AddTaskViewModelFactory(
-            activity?.application as TaskApplication
-        )
-    }
-
-    private val taskDetailViewModel : TaskDetailViewModel by activityViewModels {
-        TaskDetailViewModelFactory(
             activity?.application as TaskApplication
         )
     }
@@ -70,7 +64,6 @@ class MapsFragment : Fragment() {
                     .setMessage("Do you want to add this task location?")
                     .setPositiveButton("Ok") { _, _ ->
                         addTaskViewModel.setSelectedLocation(location)
-                        taskDetailViewModel.setSelectedLocation(location.latitude, location.longitude)
                         findNavController().navigateUp()
                     }
                     .setNegativeButton("Cancel") { _, _ -> }
@@ -83,17 +76,6 @@ class MapsFragment : Fragment() {
                     .setPositiveButton("Ok") { _, _ ->
                     }.show()
             }
-        }
-
-        map.setOnMapClickListener { location ->
-            taskDetailViewModel.setSelectedLocation(location.latitude, location.longitude)
-            addGeofence(
-                requireContext(),
-                geofencingClient,
-                location,
-                "Hello",
-                map
-            )
         }
 
         fusedLocationClient.lastLocation
@@ -167,11 +149,6 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(mapCallback)
-        viewLifecycleOwner.lifecycleScope.launch {
-            taskDetailViewModel.selectedLocation.collect {
-                Log.d("task", "MAP LOCATION: $it")
-            }
-        }
     }
 
     override fun onStart() {
